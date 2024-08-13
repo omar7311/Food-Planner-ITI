@@ -5,13 +5,75 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        android:textSize="@dimen/_22sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+   <TextView
+      android:id="@+id/login"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      android:text="Log In"
+      android:textSize="@dimen/_22sdp"
+      android:textStyle="bold"
+      android:textAlignment="center"
+      android:layout_marginTop="@dimen/_64sdp"/>
+     <EditText
+        android:id="@+id/user_name"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/login"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+         android:hint="user name"
+         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/_64sdp"
+        android:layout_marginHorizontal="@dimen/_32sdp"/>
+   <EditText
+       android:id="@+id/password"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       app:layout_constraintTop_toBottomOf="@id/user_name"
+       android:hint="password"
+       android:inputType="textPassword"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       android:layout_marginTop="@dimen/_32sdp"
+       android:layout_marginHorizontal="@dimen/_32sdp"/>
+   <Button
+       android:id="@+id/loginBtn"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginHorizontal="@dimen/_32sdp"
+       android:text="log in"
+       app:layout_constraintTop_toBottomOf="@id/password"
+       android:layout_marginTop="@dimen/_32sdp"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintStart_toStartOf="parent" />
+   <com.google.android.material.divider.MaterialDivider
+      android:id="@+id/divider"
+       android:layout_width="match_parent"
+       android:layout_height="@dimen/_1sdp"
+       app:dividerColor="@color/black"
+      app:layout_constraintTop_toBottomOf="@+id/loginBtn"
+      android:layout_marginHorizontal="@dimen/_16sdp"
+      android:layout_marginTop="@dimen/_16sdp"/>
+   <Button
+       android:id="@+id/loginWithGoogle"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginHorizontal="@dimen/_32sdp"
+       android:text="login with google"
+       android:layout_marginTop="@dimen/_32sdp"
+       app:layout_constraintTop_toBottomOf="@id/divider"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintStart_toStartOf="parent" />
+   <Button
+       android:id="@+id/loginAsGuest"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginHorizontal="@dimen/_32sdp"
+       android:text="continue as a guist"
+       android:layout_marginTop="@dimen/_32sdp"
+       app:layout_constraintTop_toBottomOf="@id/loginWithGoogle"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
