@@ -1,5 +1,10 @@
 package com.example.food_planner_iti.model;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "meal_table")
 public class MealDetails{
 	private Object strImageSource;
 	private String strIngredient10;
@@ -16,6 +21,8 @@ public class MealDetails{
 	private Object strCreativeCommonsConfirmed;
 	private Object strIngredient19;
 	private String strTags;
+	@PrimaryKey
+	@NonNull
 	private String idMeal;
 	private String strInstructions;
 	private String strIngredient1;

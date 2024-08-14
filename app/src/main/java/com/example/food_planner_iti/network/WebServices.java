@@ -20,32 +20,26 @@ import retrofit2.http.Query;
 
 public interface WebServices {
     @GET("search.php?s={strMeal}")
-    SearchMealByName searchMealByName(@Path("strMeal") String strMeal);
+    Call<SearchMealByName> searchMealByName(@Path("strMeal") String strMeal);
 
     @GET("lookup.php?i={idMeal}")
-    FullMealDetailById fullMealDetailById(@Path("idMeal") String idMeal);
+    Call<FullMealDetailById> fullMealDetailById(@Path("idMeal") String idMeal);
     @GET("random.php")
-    SingleRandomMeal singleRandomMeal();
+    Call<SingleRandomMeal> singleRandomMeal();
     @GET("categories.php")
-    AllMealCategories allMealCategories();
+    Call<AllMealCategories> allMealCategories();
     @GET("list.php?c=list")
-    AllCategoriesName allCategoriesName();
+    Call<AllCategoriesName> allCategoriesName();
     @GET("list.php?a=list")
-    AllAreaNames allAreaNames();
+    Call<AllAreaNames> allAreaNames();
     @GET("list.php?i=list")
-    AllIngredient allIngredient();
+    Call<AllIngredient> allIngredient();
     @GET("filter.php?i={strIngredient}")
-    FilterByIngredient filterByIngredient(@Path("strIngredient") String strIngredient);
+    Call<FilterByIngredient> filterByIngredient(@Path("strIngredient") String strIngredient);
     @GET("filter.php?a={strArea}")
-    FilterByArea filterByArea(@Path("strArea") String strArea);
+    Call<FilterByArea> filterByArea(@Path("strArea") String strArea);
     @GET("filter.php?c={strCategory}")
-    FilterByCategory filterByCategory(@Path("strCategory") String strCategory);
+    Call<FilterByCategory> filterByCategory(@Path("strCategory") String strCategory);
 
-//    @GET("posts")
-//    Call<List<ResponsePostsItem>> getPosts();
-//    @GET("posts/{id}")
-//    Call<ResponsePostsItem> getPost(@Path("id") int id);
-//
-//    @GET("comments")
-//    Call<List<ResponseComments>> getComments(@Query("postId") int postId);
+
 }
