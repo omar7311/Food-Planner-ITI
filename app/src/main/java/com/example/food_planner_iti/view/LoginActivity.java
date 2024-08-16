@@ -1,9 +1,10 @@
-package com.example.food_planner_iti;
+package com.example.food_planner_iti.view;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.identity.BeginSignInRequest;
+import com.example.food_planner_iti.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -32,13 +33,14 @@ import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
     EditText userName, password;
-    Button logIn,loginAnonymously;
+    Button logIn,loginAnonymously, signUp;
     Button googleAuth;
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
     GoogleSignInClient googleSignInClient;
     private static final int RC_SIGN_IN = 20;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,9 +50,16 @@ public class LoginActivity extends AppCompatActivity {
         logIn = findViewById(R.id.loginBtn);
         loginAnonymously=findViewById(R.id.loginAsGuest);
         googleAuth = findViewById(R.id.loginWithGoogle);
+        signUp=findViewById(R.id.signUpButton);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         login();
+        signUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, SignupActivity.class));
+            }
+        });
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()

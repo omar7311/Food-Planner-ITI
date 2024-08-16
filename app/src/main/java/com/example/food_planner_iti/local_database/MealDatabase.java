@@ -6,12 +6,13 @@ import androidx.room.Dao;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
 import com.example.food_planner_iti.model.MealDetails;
 
 
-@Database(entities = {MealDetails.class},version = 1)
-
+@Database(entities = {Meal.class},version = 1)
+@TypeConverters(converters.class)
 public abstract class MealDatabase extends RoomDatabase {
     private static MealDatabase instance = null;
     public abstract MealDao getProductDAO();

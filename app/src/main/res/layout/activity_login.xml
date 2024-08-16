@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".view.LoginActivity">
    <TextView
       android:id="@+id/login"
        android:layout_width="match_parent"
@@ -62,7 +62,7 @@
        android:layout_height="wrap_content"
        android:layout_marginHorizontal="@dimen/_32sdp"
        android:text="login with google"
-       android:layout_marginTop="@dimen/_32sdp"
+       android:layout_marginTop="@dimen/_16sdp"
        app:layout_constraintTop_toBottomOf="@id/divider"
        app:layout_constraintEnd_toEndOf="parent"
        app:layout_constraintStart_toStartOf="parent" />
@@ -71,9 +71,20 @@
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:layout_marginHorizontal="@dimen/_32sdp"
-       android:text="continue as a guist"
-       android:layout_marginTop="@dimen/_32sdp"
+       android:text="continue as a guest"
+       android:layout_marginTop="@dimen/_16sdp"
        app:layout_constraintTop_toBottomOf="@id/loginWithGoogle"
        app:layout_constraintEnd_toEndOf="parent"
        app:layout_constraintStart_toStartOf="parent" />
+   <Button
+       android:id="@+id/signUpButton"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginHorizontal="@dimen/_32sdp"
+       android:text="Sign Up"
+       android:layout_marginTop="@dimen/_16sdp"
+       app:layout_constraintTop_toBottomOf="@id/loginAsGuest"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
