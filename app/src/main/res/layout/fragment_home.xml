@@ -1,14 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:scrollbars="none"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".home.view.HomeFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Home" />
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/mealOfDay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="@dimen/_8sdp"
+            android:text="Meal Of The Day"
+            android:textStyle="bold"
+            android:textSize="@dimen/_22sdp"
+            />
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/randomMeal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/mealOfDay"
+            app:cardElevation="@dimen/_16sdp"
+            app:cardCornerRadius="@dimen/_16sdp"
+            android:layout_margin="@dimen/_8sdp"
+            android:padding="@dimen/_8sdp">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/imageRandMeal"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_200sdp"
+                    android:scaleType="centerCrop"/>
+                <TextView
+                    android:id="@+id/nameRandomMeal"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:padding="@dimen/_8sdp"
+                    android:textSize="@dimen/_18sdp"
+                    android:background="#80000000"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+                <CheckBox
+                    android:id="@+id/addToFav"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@drawable/baseline_favorite_24"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    app:layout_constraintBottom_toTopOf="@id/nameRandomMeal"
+                    app:layout_constraintTop_toTopOf="@id/nameRandomMeal"/>
+                <CheckBox
+                    android:id="@+id/addToPlan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@drawable/baseline_calendar_month_24"
+                    app:layout_constraintRight_toLeftOf="@id/addToFav"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    app:layout_constraintBottom_toTopOf="@id/nameRandomMeal"
+                    app:layout_constraintTop_toTopOf="@id/nameRandomMeal"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <TextView
+            android:id="@+id/category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/randomMeal"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginLeft="@dimen/_8sdp"
+            android:text="Categories"
+            android:textStyle="bold"
+            android:textSize="@dimen/_22sdp"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycleCategories"
+            app:layout_constraintTop_toBottomOf="@id/category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/category_item"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/country"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginLeft="@dimen/_8sdp"
+            android:text="Countries"
+            android:textSize="@dimen/_22sdp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/recycleCategories" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycleCountries"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/country"
+            tools:listitem="@layout/country_item" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

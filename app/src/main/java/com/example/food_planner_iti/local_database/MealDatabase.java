@@ -11,7 +11,7 @@ import androidx.room.TypeConverters;
 import com.example.food_planner_iti.model.MealDetails;
 
 
-@Database(entities = {Meal.class},version = 1)
+@Database(entities = {Meal.class, MealPlan.class},version = 1)
 @TypeConverters(converters.class)
 public abstract class MealDatabase extends RoomDatabase {
     private static MealDatabase instance = null;

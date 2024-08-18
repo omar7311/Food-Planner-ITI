@@ -20,4 +20,10 @@ public interface MealDao {
     void insertMeal(Meal meal);
     @Delete
     void deleteMeal(Meal meal);
+    @Query("SELECT * FROM mealPlan_table")
+    LiveData<List<MealPlan>> getAllMealsPlan();
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insertMeal(MealPlan mealPlan);
+    @Delete
+    void deleteMeal(MealPlan mealPlan);
 }
