@@ -52,19 +52,19 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         homePresenter=new HomePresenter(this);
         nameRandomMeal=view.findViewById(R.id.nameRandomMeal);
         imageView=view.findViewById(R.id.imageRandMeal);
         categoryRecycle=view.findViewById(R.id.recycleCategories);
         countryRecycle=view.findViewById(R.id.recycleCountries);
-        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public void getSingleRandomMeal(Meal meal) {
         nameRandomMeal.setText(meal.getName());
         if(meal.getImageUrl()!=null)
-        Glide.with(this).load(meal.getImageUrl()).into(imageView);
+         Glide.with(this).load(meal.getImageUrl()).into(imageView);
     }
 
     @Override
@@ -85,4 +85,6 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
     public void errorMessage(String error) {
         Snackbar.make(this.getView(),error,Snackbar.LENGTH_LONG).show();
     }
+
+
 }

@@ -9,7 +9,11 @@
         android:id="@+id/home"
         android:name="com.example.food_planner_iti.home.view.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_home_to_mealsFragment"
+            app:destination="@id/mealsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/search"
         android:name="com.example.food_planner_iti.view.SearchFragment"
@@ -25,4 +29,16 @@
         android:name="com.example.food_planner_iti.view.PlanFragment"
         android:label="Plan"
         tools:layout="@layout/fragment_plan" />
+    <fragment
+        android:id="@+id/mealsFragment"
+        android:name="com.example.food_planner_iti.meals.view.MealsFragment"
+        android:label="Meals"
+        tools:layout="@layout/fragment_meals">
+        <argument
+            android:name="strCategoryOrArea"
+            app:argType="string" />
+        <argument
+            android:name="flag"
+            app:argType="integer" />
+    </fragment>
 </navigation>

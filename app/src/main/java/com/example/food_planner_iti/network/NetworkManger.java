@@ -5,11 +5,15 @@ import android.util.Log;
 import com.example.food_planner_iti.home.presenter.HomePresenterInterface;
 import com.example.food_planner_iti.home.view.HomeFragmentInterface;
 import com.example.food_planner_iti.local_database.Meal;
+import com.example.food_planner_iti.meals.presenter.MealPresenterInterface;
 import com.example.food_planner_iti.model.AllAreaNames;
 import com.example.food_planner_iti.model.AllMealCategories;
 import com.example.food_planner_iti.model.AreasName;
 import com.example.food_planner_iti.model.CategoriesItem;
+import com.example.food_planner_iti.model.FilterByArea;
+import com.example.food_planner_iti.model.FilterByCategory;
 import com.example.food_planner_iti.model.MealDetails;
+import com.example.food_planner_iti.model.MealItem;
 import com.example.food_planner_iti.model.SingleRandomMeal;
 
 import java.util.ArrayList;
@@ -17,6 +21,8 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 public class NetworkManger {
 
@@ -160,4 +166,55 @@ public class NetworkManger {
             }
         });
     }
+
+
+    public void getMealsByCategory(MealPresenterInterface mealPresenterInterface,String strCategory){
+       RetrofitClient.getService().filterByCategory(strCategory).enqueue(new Callback<FilterByCategory>() {
+           @Override
+           public void onResponse(Call<FilterByCategory> call, Response<FilterByCategory> response) {
+               if(response.isSuccessful())
+                   mealPresenterInterface.getMealsByCategory((ArrayList<MealItem>) response.body().getMealItems());
+
+           }
+
+           @Override
+           public void onFailure(Call<FilterByCategory> call, Throwable t) {
+                mealPresenterInterface.errorMessage(t.getLocalizedMessage());
+           }
+       });
+    }
+    public void getMealsByArea(MealPresenterInterface mealPresenterInterface,String strArea){
+       RetrofitClient.getService().filterByArea(strArea).enqueue(new Callback<FilterByArea>() {
+           @Override
+           public void onResponse(Call<FilterByArea> call, Response<FilterByArea> response) {
+               if(response.isSuccessful())
+                   mealPresenterInterface.getMealsByArea((ArrayList<MealItem>) response.body().getMealItems());
+           }
+
+           @Override
+           public void onFailure(Call<FilterByArea> call, Throwable t) {
+              mealPresenterInterface.errorMessage(t.getLocalizedMessage());
+           }
+       });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

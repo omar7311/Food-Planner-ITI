@@ -34,12 +34,12 @@ public interface WebServices {
     Call<AllAreaNames> allAreaNames();
     @GET("list.php?i=list")
     Call<AllIngredient> allIngredient();
-    @GET("filter.php?i={strIngredient}")
-    Call<FilterByIngredient> filterByIngredient(@Path("strIngredient") String strIngredient);
-    @GET("filter.php?a={strArea}")
-    Call<FilterByArea> filterByArea(@Path("strArea") String strArea);
-    @GET("filter.php?c={strCategory}")
-    Call<FilterByCategory> filterByCategory(@Path("strCategory") String strCategory);
+    @GET("filter.php")
+    Call<FilterByIngredient> filterByIngredient(@Query("i") String strIngredient);
+    @GET("filter.php")
+    Call<FilterByArea> filterByArea(@Query("a") String strArea);
+    @GET("filter.php")
+    Call<FilterByCategory> filterByCategory(@Query("c") String strCategory);
 
 
 }

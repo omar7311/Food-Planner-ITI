@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -103,13 +104,21 @@ public class CountryAdapter extends RecyclerView.Adapter<CountryAdapter.CountryV
         return areasNames.size();
     }
 
-    static class CountryViewHolder extends RecyclerView.ViewHolder {
+     class CountryViewHolder extends RecyclerView.ViewHolder {
         ImageView countryImage;
         TextView countryName;
         public CountryViewHolder(@NonNull View itemView) {
             super(itemView);
            countryImage= itemView.findViewById(R.id.imageCountry);
            countryName=itemView.findViewById(R.id.countryName);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    HomeFragmentDirections.ActionHomeToMealsFragment actionHomeToMealsFragment=HomeFragmentDirections
+                            .actionHomeToMealsFragment(areasNames.get(getLayoutPosition()).getStrArea(),1);
+                    Navigation.findNavController(v).navigate(actionHomeToMealsFragment);
+                }
+            });
         }
     }
 }
