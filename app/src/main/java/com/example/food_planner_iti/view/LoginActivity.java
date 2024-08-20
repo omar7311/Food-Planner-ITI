@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.food_planner_iti.R;
@@ -33,7 +34,8 @@ import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
     EditText userName, password;
-    Button logIn,loginAnonymously, signUp;
+    Button logIn,loginAnonymously;
+    TextView signUp;
     Button googleAuth;
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
@@ -50,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         logIn = findViewById(R.id.loginBtn);
         loginAnonymously=findViewById(R.id.loginAsGuest);
         googleAuth = findViewById(R.id.loginWithGoogle);
-        signUp=findViewById(R.id.signUpButton);
+        signUp=findViewById(R.id.sign_up);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         login();

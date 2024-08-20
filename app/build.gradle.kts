@@ -1,3 +1,5 @@
+import java.util.regex.Pattern.compile
+
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
@@ -35,6 +37,9 @@ android {
 }
 
 dependencies {
+    //youtube api
+    compile ("com.jaedongchicken:ytplayer:1.4.4")
+    // navigation component
     implementation ("androidx.navigation:navigation-fragment:2.7.7")
     implementation ("androidx.navigation:navigation-ui:2.7.7")
     //room

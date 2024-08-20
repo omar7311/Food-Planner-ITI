@@ -22,8 +22,8 @@ public interface WebServices {
     @GET("search.php?s={strMeal}")
     Call<SearchMealByName> searchMealByName(@Path("strMeal") String strMeal);
 
-    @GET("lookup.php?i={idMeal}")
-    Call<FullMealDetailById> fullMealDetailById(@Path("idMeal") String idMeal);
+    @GET("lookup.php")
+    Call<FullMealDetailById> fullMealDetailById(@Query("i") String idMeal);
     @GET("random.php")
     Call<SingleRandomMeal> singleRandomMeal();
     @GET("categories.php")

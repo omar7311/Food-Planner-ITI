@@ -4,7 +4,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,7 +39,8 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
     RecyclerView categoryRecycle;
     CountryAdapter adapter2;
     RecyclerView countryRecycle;
-
+    CardView randomMeal;
+    HomeFragmentDirections.ActionHomeToMealDetailsFragment actionHomeToMealDetailsFragment;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +61,13 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
         imageView=view.findViewById(R.id.imageRandMeal);
         categoryRecycle=view.findViewById(R.id.recycleCategories);
         countryRecycle=view.findViewById(R.id.recycleCountries);
+        randomMeal=view.findViewById(R.id.randomMeal);
+        randomMeal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(actionHomeToMealDetailsFragment);
+            }
+        });
     }
 
     @Override
@@ -65,6 +75,8 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
         nameRandomMeal.setText(meal.getName());
         if(meal.getImageUrl()!=null)
          Glide.with(this).load(meal.getImageUrl()).into(imageView);
+         actionHomeToMealDetailsFragment =HomeFragmentDirections.actionHomeToMealDetailsFragment(meal.getId());
+
     }
 
     @Override

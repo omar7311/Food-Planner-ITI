@@ -4,9 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 @Entity(tableName = "meal_table")
-public class Meal {
+public class Meal implements Serializable {
     @PrimaryKey
     @NonNull
     private String id;
@@ -14,6 +15,16 @@ public class Meal {
     private String imageUrl;
     private String country;
    private ArrayList<String> ingredients;
+    private ArrayList<String> ingredientsImage;
+
+    public ArrayList<String> getIngredientsImage() {
+        return ingredientsImage;
+    }
+
+    public void setIngredientsImage(ArrayList<String> ingredientsImage) {
+        this.ingredientsImage = ingredientsImage;
+    }
+
     private String steps;
     private String videoUrl;
 
