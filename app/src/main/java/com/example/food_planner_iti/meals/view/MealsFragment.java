@@ -58,13 +58,13 @@ public class MealsFragment extends Fragment implements MealsFragmentInterface {
 
     @Override
     public void getMealsByArea(ArrayList<MealItem> mealItem) {
-     adapter=new MealAdapter(mealItem,this.getContext());
+     adapter=new MealAdapter(mealItem,this.getContext(),this);
      recyclerView.setAdapter(adapter);
     }
 
     @Override
     public void getMealsByCategory(ArrayList<MealItem> mealItem) {
-        adapter=new MealAdapter(mealItem,this.getContext());
+        adapter=new MealAdapter(mealItem,this.getContext(),this);
         recyclerView.setAdapter(adapter);
     }
 

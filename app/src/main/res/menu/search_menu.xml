@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<item
+    android:id="@+id/mealByName"
+    android:title="@string/search_by_name"/>
+    <item
+        android:id="@+id/mealByIngredient"
+        android:title="@string/search_by_ingredient"/>
+    <item
+        android:id="@+id/mealByCategory"
+        android:title="@string/search_by_category"/>
+    <item
+        android:id="@+id/mealByCountry"
+        android:title="@string/search_by_country"/>
+</menu>

@@ -13,10 +13,13 @@ import com.example.food_planner_iti.model.AreasName;
 import com.example.food_planner_iti.model.CategoriesItem;
 import com.example.food_planner_iti.model.FilterByArea;
 import com.example.food_planner_iti.model.FilterByCategory;
+import com.example.food_planner_iti.model.FilterByIngredient;
 import com.example.food_planner_iti.model.FullMealDetailById;
 import com.example.food_planner_iti.model.MealDetails;
 import com.example.food_planner_iti.model.MealItem;
+import com.example.food_planner_iti.model.SearchMealByName;
 import com.example.food_planner_iti.model.SingleRandomMeal;
+import com.example.food_planner_iti.search.presenter.SearchPresenterInterface;
 
 import java.util.ArrayList;
 
@@ -210,7 +213,7 @@ public class NetworkManger {
        RetrofitClient.getService().filterByCategory(strCategory).enqueue(new Callback<FilterByCategory>() {
            @Override
            public void onResponse(Call<FilterByCategory> call, Response<FilterByCategory> response) {
-               if(response.isSuccessful())
+               if(response.isSuccessful()&&response.body().getMealItems()!=null)
                    mealPresenterInterface.getMealsByCategory((ArrayList<MealItem>) response.body().getMealItems());
 
            }
@@ -225,7 +228,7 @@ public class NetworkManger {
        RetrofitClient.getService().filterByArea(strArea).enqueue(new Callback<FilterByArea>() {
            @Override
            public void onResponse(Call<FilterByArea> call, Response<FilterByArea> response) {
-               if(response.isSuccessful())
+               if(response.isSuccessful()&&response.body().getMealItems()!=null)
                    mealPresenterInterface.getMealsByArea((ArrayList<MealItem>) response.body().getMealItems());
            }
 
@@ -250,9 +253,41 @@ public class NetworkManger {
              mealDetailsPresenterInterface.errorMessage(t.getLocalizedMessage());
            }
        });
-
     }
+public void searchByMealName(SearchPresenterInterface searchPresenterInterface,String name){
+       RetrofitClient.getService().searchMealByName(name).enqueue(new Callback<SearchMealByName>() {
+           @Override
+           public void onResponse(Call<SearchMealByName> call, Response<SearchMealByName> response) {
+               if(response.isSuccessful()&&response.body().getMeals()!=null){
+                   ArrayList<Meal> meals=new ArrayList<>();
+                   for(int i=0;i<response.body().getMeals().size();i++){
+                       meals.add(getMeal(response.body().getMeals().get(i)));
+                   }
+                   searchPresenterInterface.getMealsByName(meals);
+               }
+           }
 
+           @Override
+           public void onFailure(Call<SearchMealByName> call, Throwable t) {
+            searchPresenterInterface.errorMessage(t.getLocalizedMessage());
+           }
+       });
+}
+public void searchByIngredient(SearchPresenterInterface searchPresenterInterface,String name){
+       RetrofitClient.getService().filterByIngredient(name).enqueue(new Callback<FilterByIngredient>() {
+           @Override
+           public void onResponse(Call<FilterByIngredient> call, Response<FilterByIngredient> response) {
+               if(response.isSuccessful()&&response.body().getMealItems()!=null) {
+                   searchPresenterInterface.getMealsByIngredient((ArrayList<MealItem>) response.body().getMealItems());
+               }
+           }
+
+           @Override
+           public void onFailure(Call<FilterByIngredient> call, Throwable t) {
+               searchPresenterInterface.errorMessage(t.getLocalizedMessage());
+           }
+       });
+}
 
 
 

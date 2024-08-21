@@ -3,4 +3,8 @@
     <string name="default_web_client_id">828414646091-u0msgc8r9nta9tnv8grcoar5qm269ibi.apps.googleusercontent.com</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="search_by_name">search by name</string>
+    <string name="search_by_ingredient">search by ingredient</string>
+    <string name="search_by_category">search by category</string>
+    <string name="search_by_country">search by country</string>
 </resources>

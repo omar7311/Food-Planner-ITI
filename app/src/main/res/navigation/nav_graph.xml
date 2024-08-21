@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/search"
-        android:name="com.example.food_planner_iti.view.SearchFragment"
+        android:name="com.example.food_planner_iti.search.view.SearchFragment"
         android:label="Search"
         tools:layout="@layout/fragment_search" >
         <action

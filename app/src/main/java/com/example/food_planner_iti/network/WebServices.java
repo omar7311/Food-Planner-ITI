@@ -19,8 +19,8 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface WebServices {
-    @GET("search.php?s={strMeal}")
-    Call<SearchMealByName> searchMealByName(@Path("strMeal") String strMeal);
+    @GET("search.php")
+    Call<SearchMealByName> searchMealByName(@Query("s") String strMeal);
 
     @GET("lookup.php")
     Call<FullMealDetailById> fullMealDetailById(@Query("i") String idMeal);
