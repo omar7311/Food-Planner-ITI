@@ -15,8 +15,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.food_planner_iti.R;
+import com.example.food_planner_iti.local_database.DatabaseManger;
 import com.example.food_planner_iti.local_database.Meal;
 import com.example.food_planner_iti.meals.presenter.MealPresenter;
+import com.example.food_planner_iti.meals.view.ClickListener;
 import com.example.food_planner_iti.meals.view.MealAdapter;
 import com.example.food_planner_iti.meals.view.MealsFragmentInterface;
 import com.example.food_planner_iti.model.MealItem;
@@ -28,7 +30,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 
 
-public class SearchFragment extends Fragment implements SearchFragmentInterface, MealsFragmentInterface {
+public class SearchFragment extends Fragment implements SearchFragmentInterface, MealsFragmentInterface, ClickListener {
 
     SearchPresenter presenter;
     SearchBar searchBar;
@@ -55,7 +57,7 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         presenter = new SearchPresenter(this);
-        mealPresenter=new MealPresenter(this);
+        mealPresenter=new MealPresenter(this,new DatabaseManger(getContext(),this));
         searchBar = view.findViewById(R.id.search_bar);
         searchView = view.findViewById(R.id.searchView);
         searchView.inflateMenu(R.menu.search_menu);
@@ -100,28 +102,28 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
             mealItems.add(new MealItem(meals.get(i).getImageUrl(),meals.get(i).getId()
                     ,meals.get(i).getName()));
         }
-        adapter=new MealAdapter(mealItems,this.getContext(),this);
+        adapter=new MealAdapter(mealItems,this.getContext(),this,this);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
 
     @Override
     public void getMealsByIngredient(ArrayList<MealItem> mealItems) {
-        adapter=new MealAdapter(mealItems,this.getContext(),this);
+        adapter=new MealAdapter(mealItems,this.getContext(),this,this);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
 
     @Override
     public void getMealsByArea(ArrayList<MealItem> mealItem) {
-        adapter=new MealAdapter(mealItem,this.getContext(),this);
+        adapter=new MealAdapter(mealItem,this.getContext(),this,this);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
 
     @Override
     public void getMealsByCategory(ArrayList<MealItem> mealItem) {
-        adapter=new MealAdapter(mealItem,this.getContext(),this);
+        adapter=new MealAdapter(mealItem,this.getContext(),this,this);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
@@ -129,5 +131,18 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
     @Override
     public void errorMessage(String error) {
         Snackbar.make(this.getView(),error,Snackbar.LENGTH_SHORT).show();
+    }
+
+
+
+    @Override
+    public void onClickInsert(Meal meal) {
+        new Thread(()->mealPresenter.insertFavMeal(meal)).start();
+
+    }
+
+    @Override
+    public void onClickDelete(Meal meal) {
+        new Thread(()->mealPresenter.deleteFavMeal(meal)).start();
     }
 }

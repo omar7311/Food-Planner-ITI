@@ -4,6 +4,24 @@ public class MealItem{
 	private String strMealThumb;
 	private String idMeal;
 	private String strMeal;
+	private boolean fav;
+	private boolean plan;
+
+	public boolean isFav() {
+		return fav;
+	}
+
+	public void setFav(boolean fav) {
+		this.fav = fav;
+	}
+
+	public boolean isPlan() {
+		return plan;
+	}
+
+	public void setPlan(boolean plan) {
+		this.plan = plan;
+	}
 
 	public MealItem(String strMealThumb, String idMeal, String strMeal) {
 		this.strMealThumb = strMealThumb;

@@ -44,14 +44,14 @@ public class NetworkManger {
             }
         });
     }
-    private Meal getMeal(MealDetails mealDetails){
+    public Meal getMeal(MealDetails mealDetails){
         Meal meal=new Meal();
         meal.setId(mealDetails.getIdMeal());
         meal.setName(mealDetails.getStrMeal());
         meal.setCountry(mealDetails.getStrArea());
         meal.setSteps(mealDetails.getStrInstructions());
         meal.setImageUrl(mealDetails.getStrMealThumb());
-        meal.setVideoUrl(mealDetails.getStrYoutube());
+        if(!mealDetails.getStrYoutube().isEmpty()) meal.setVideoUrl(mealDetails.getStrYoutube());
         ArrayList<String> ingredients=new ArrayList<>();
         ArrayList<String> ingredientsImage=new ArrayList<>();
         if(mealDetails.getStrIngredient1()!=null&&!mealDetails.getStrIngredient1().equals("")){

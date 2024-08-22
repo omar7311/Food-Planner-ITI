@@ -28,7 +28,7 @@
     </fragment>
     <fragment
         android:id="@+id/favourite"
-        android:name="com.example.food_planner_iti.view.FavouriteFragment"
+        android:name="com.example.food_planner_iti.fav_meal.view.FavouriteFragment"
         android:label="Favourite"
         tools:layout="@layout/fragment_favourite" >
         <action

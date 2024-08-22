@@ -27,6 +27,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
@@ -54,7 +56,6 @@ public class LoginActivity extends AppCompatActivity {
         googleAuth = findViewById(R.id.loginWithGoogle);
         signUp=findViewById(R.id.sign_up);
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
         login();
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,12 +140,6 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                            HashMap<String, String> map = new HashMap<>();
-                            map.put("id", user.getUid());
-                            map.put("name", user.getDisplayName());
-                            firebaseDatabase.getReference().child("users")
-                                    .child(user.getUid()).setValue(map);
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
                         } else {
