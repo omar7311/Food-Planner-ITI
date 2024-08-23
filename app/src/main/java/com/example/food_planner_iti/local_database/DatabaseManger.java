@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.food_planner_iti.fav_meal.presenter.FavMealPresenterInterface;
+import com.example.food_planner_iti.plan_meal.presenter.PlanMealPresenterInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +30,23 @@ public class DatabaseManger {
            }
        });
     }
-    public void getAllPlanMeal(){
-        MealDatabase.getInstance(context).getProductDAO().getAllMealsPlan();
+    public void getAllPlanMeal(PlanMealPresenterInterface planMealPresenterInterface){
+        MealDatabase.getInstance(context).getProductDAO().getAllMealsPlan().observe(owner, new Observer<List<MealPlan>>() {
+            @Override
+            public void onChanged(List<MealPlan> mealPlans) {
+                planMealPresenterInterface.getAllMealsPlan((ArrayList<MealPlan>) mealPlans);
+            }
+        });
+
+    }
+    public void getPlanMealByDate(PlanMealPresenterInterface planMealPresenterInterface,String date){
+        MealDatabase.getInstance(context).getProductDAO().getMealsPlanByDate(date).observe(owner, new Observer<List<MealPlan>>() {
+            @Override
+            public void onChanged(List<MealPlan> mealPlans) {
+                planMealPresenterInterface.getAllMealsPlan((ArrayList<MealPlan>) mealPlans);
+
+            }
+        });
 
     }
     public void insertFavMeal(Meal meal){

@@ -20,6 +20,8 @@ import com.bumptech.glide.Glide;
 import com.example.food_planner_iti.R;
 import com.example.food_planner_iti.fav_meal.view.FavouriteFragment;
 import com.example.food_planner_iti.fav_meal.view.FavouriteFragmentDirections;
+import com.example.food_planner_iti.local_database.Meal;
+import com.example.food_planner_iti.local_database.MealPlan;
 import com.example.food_planner_iti.model.FullMealDetailById;
 import com.example.food_planner_iti.model.MealItem;
 import com.example.food_planner_iti.network.NetworkManger;
@@ -110,13 +112,29 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
                              });
                 }
             });
-            plan.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            plan.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    editor.putBoolean(mealItems.get(getLayoutPosition()).getIdMeal()+"p",isChecked);
+                public void onClick(View v) {
+                    editor.putBoolean(mealItems.get(getLayoutPosition()).getIdMeal()+"p",plan.isChecked());
                     editor.commit();
+                    RetrofitClient.getService().fullMealDetailById(mealItems.get(getLayoutPosition()).getIdMeal())
+                            .enqueue(new Callback<FullMealDetailById>() {
+                                @Override
+                                public void onResponse(Call<FullMealDetailById> call, Response<FullMealDetailById> response) {
+                                    if(plan.isChecked()) {
+                                        clickListener.onClickInsertMealPlan(plan,new NetworkManger().getMeal(response.body().getMeals().get(0)));
+                                    }else{
+                                        clickListener.onClickDeleteMealPlan(new NetworkManger().getMeal(response.body().getMeals().get(0)));
+                                    }
+                                }
+                                @Override
+                                public void onFailure(Call<FullMealDetailById> call, Throwable t) {
+
+                                }
+                            });
                 }
             });
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -141,6 +159,20 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
                 }
             });
         }
+        public MealPlan getMealPlan(Meal meal, String date){
+            MealPlan mealPlan=new MealPlan();
+            mealPlan.setId(meal.getId());
+            mealPlan.setDate(date);
+            mealPlan.setCountry(meal.getCountry());
+            mealPlan.setIngredients(meal.getIngredients());
+            mealPlan.setIngredientsImage(meal.getIngredientsImage());
+            mealPlan.setImageUrl(meal.getImageUrl());
+            mealPlan.setName(meal.getName());
+            mealPlan.setVideoUrl(meal.getVideoUrl());
+            mealPlan.setSteps(meal.getSteps());
+            return mealPlan;
+        }
+
     }
 }
 

@@ -2,6 +2,7 @@ package com.example.food_planner_iti.meals.presenter;
 
 import com.example.food_planner_iti.local_database.DatabaseManger;
 import com.example.food_planner_iti.local_database.Meal;
+import com.example.food_planner_iti.local_database.MealPlan;
 import com.example.food_planner_iti.meals.view.MealsFragmentInterface;
 import com.example.food_planner_iti.model.MealItem;
 import com.example.food_planner_iti.network.NetworkManger;
@@ -24,6 +25,13 @@ public class MealPresenter implements MealPresenterInterface{
 
     public void deleteFavMeal(Meal meal) {
         databaseManger.deleteFavMeal(meal);
+    }
+    public void insertPlanMeal(MealPlan meal) {
+        databaseManger.insertPlanMeal(meal);
+    }
+
+    public void deletePlanMeal(MealPlan meal) {
+        databaseManger.deletePlanMeal(meal);
     }
    public void sendCategoryName(String categoryName){
         networkManger.getMealsByCategory(this,categoryName);

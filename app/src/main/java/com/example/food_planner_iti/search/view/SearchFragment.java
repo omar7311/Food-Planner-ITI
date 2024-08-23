@@ -1,5 +1,8 @@
 package com.example.food_planner_iti.search.view;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,20 +15,27 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.food_planner_iti.R;
 import com.example.food_planner_iti.local_database.DatabaseManger;
 import com.example.food_planner_iti.local_database.Meal;
+import com.example.food_planner_iti.local_database.MealPlan;
 import com.example.food_planner_iti.meals.presenter.MealPresenter;
 import com.example.food_planner_iti.meals.view.ClickListener;
 import com.example.food_planner_iti.meals.view.MealAdapter;
 import com.example.food_planner_iti.meals.view.MealsFragmentInterface;
 import com.example.food_planner_iti.model.MealItem;
 import com.example.food_planner_iti.search.presenter.SearchPresenter;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.search.SearchBar;
 import com.google.android.material.search.SearchView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -39,7 +49,7 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
     MealAdapter adapter;
     MealPresenter mealPresenter;
     String flag;
-
+     Meal meal;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,11 +148,86 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
     @Override
     public void onClickInsert(Meal meal) {
         new Thread(()->mealPresenter.insertFavMeal(meal)).start();
-
+        FirebaseDatabase.getInstance().getReference("Meals")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("meal_fav").child(meal.getId()).setValue(meal);
     }
 
     @Override
     public void onClickDelete(Meal meal) {
         new Thread(()->mealPresenter.deleteFavMeal(meal)).start();
+        FirebaseDatabase.getInstance().getReference("Meals")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("meal_fav").child(meal.getId()).setValue(null);
     }
+
+    @Override
+    public void onClickInsertMealPlan(CheckBox plan ,Meal meal) {
+        this.meal=meal;
+        showRadioGroupDialog(plan);
+    }
+
+    @Override
+    public void onClickDeleteMealPlan(Meal meal) {
+        this.meal=meal;
+        new Thread( ()->mealPresenter.deletePlanMeal(getMealPlan(meal,selectedOption))).start();
+        FirebaseDatabase.getInstance().getReference("Meals")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("meal_plan").child(getMealPlan(meal,selectedOption).getId()).setValue(null);
+    }
+    String selectedOption;
+    public MealPlan getMealPlan(Meal meal,String date){
+        MealPlan mealPlan=new MealPlan();
+        mealPlan.setId(meal.getId());
+        mealPlan.setDate(date);
+        mealPlan.setCountry(meal.getCountry());
+        mealPlan.setIngredients(meal.getIngredients());
+        mealPlan.setIngredientsImage(meal.getIngredientsImage());
+        mealPlan.setImageUrl(meal.getImageUrl());
+        mealPlan.setName(meal.getName());
+        mealPlan.setVideoUrl(meal.getVideoUrl());
+        mealPlan.setSteps(meal.getSteps());
+        return mealPlan;
+    }
+    private void showRadioGroupDialog(CheckBox plan) {
+        // Inflate the custom layout
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.list_of_week, null);
+
+        // Initialize the radio group from the custom layout
+        RadioGroup radioGroup = dialogView.findViewById(R.id.radio_group);
+
+        // Create the AlertDialog using MaterialAlertDialogBuilder
+        new MaterialAlertDialogBuilder(this.getContext())
+                .setTitle("Choose a day")
+                .setCancelable(false)
+                .setView(dialogView)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Find the selected radio button by its ID
+                        int selectedId = radioGroup.getCheckedRadioButtonId();
+                        RadioButton selectedRadioButton = dialogView.findViewById(selectedId);
+
+                        if (selectedRadioButton != null) {
+                            selectedOption = selectedRadioButton.getText().toString();
+                            new Thread( ()->mealPresenter.insertPlanMeal(getMealPlan(meal,selectedOption))).start();
+                            FirebaseDatabase.getInstance().getReference("Meals")
+                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .child("meal_plan").child(getMealPlan(meal,selectedOption).getId()).setValue(getMealPlan(meal,selectedOption));
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                         plan.setChecked(false);
+                        SharedPreferences.Editor editor=getActivity().getPreferences(Context.MODE_PRIVATE).edit();
+                        editor.putBoolean(meal.getId()+"p",plan.isChecked());
+                        editor.commit();
+                    }
+                })
+                .show();
+    }
+
 }

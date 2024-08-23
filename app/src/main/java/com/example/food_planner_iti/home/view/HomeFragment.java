@@ -1,6 +1,7 @@
 package com.example.food_planner_iti.home.view;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -20,6 +21,8 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,8 +32,11 @@ import com.example.food_planner_iti.home.presenter.HomePresenter;
 import com.example.food_planner_iti.home.presenter.HomePresenterInterface;
 import com.example.food_planner_iti.local_database.DatabaseManger;
 import com.example.food_planner_iti.local_database.Meal;
+import com.example.food_planner_iti.local_database.MealPlan;
 import com.example.food_planner_iti.model.AreasName;
 import com.example.food_planner_iti.model.CategoriesItem;
+import com.example.food_planner_iti.view.MainActivity;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
@@ -49,6 +55,7 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
     CardView randomMeal;
     CheckBox fav,plan;
     SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
     String key_fav;
     String key_plan;
     Meal meal;
@@ -77,7 +84,7 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
         fav=view.findViewById(R.id.addToFav);
         plan=view.findViewById(R.id.addToPlan);
         sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor = sharedPreferences.edit();
         fav.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -96,11 +103,18 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
                }
             }
         });
-        plan.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        plan.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                editor.putBoolean(key_plan,isChecked);
+            public void onClick(View v) {
+                editor.putBoolean(key_plan,plan.isChecked());
                 editor.commit();
+                if(plan.isChecked()){showRadioGroupDialog();}
+                else {
+                    new Thread(()-> homePresenter.deletePlanMeal(getMealPlan(meal,selectedOption))).start();
+                    FirebaseDatabase.getInstance().getReference("Meals")
+                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .child("meal_plan").child(getMealPlan(meal,selectedOption).getId()).setValue(null);
+                }
             }
         });
         randomMeal.setOnClickListener(new View.OnClickListener() {
@@ -110,7 +124,59 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
             }
         });
     }
+    String selectedOption;
+    public MealPlan getMealPlan(Meal meal,String date){
+        MealPlan mealPlan=new MealPlan();
+        mealPlan.setId(meal.getId());
+        mealPlan.setDate(date);
+        mealPlan.setCountry(meal.getCountry());
+        mealPlan.setIngredients(meal.getIngredients());
+        mealPlan.setIngredientsImage(meal.getIngredientsImage());
+        mealPlan.setImageUrl(meal.getImageUrl());
+        mealPlan.setName(meal.getName());
+        mealPlan.setVideoUrl(meal.getVideoUrl());
+        mealPlan.setSteps(meal.getSteps());
+        return mealPlan;
+    }
+    private void showRadioGroupDialog() {
+        // Inflate the custom layout
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.list_of_week, null);
 
+        // Initialize the radio group from the custom layout
+        RadioGroup radioGroup = dialogView.findViewById(R.id.radio_group);
+
+        // Create the AlertDialog using MaterialAlertDialogBuilder
+        new MaterialAlertDialogBuilder(this.getContext())
+                .setTitle("Choose a day")
+                .setCancelable(false)
+                .setView(dialogView)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Find the selected radio button by its ID
+                        int selectedId = radioGroup.getCheckedRadioButtonId();
+                        RadioButton selectedRadioButton = dialogView.findViewById(selectedId);
+
+                        if (selectedRadioButton != null) {
+                            selectedOption = selectedRadioButton.getText().toString();
+                            new Thread( ()->homePresenter.insertPlanMeal(getMealPlan(meal,selectedOption))).start();
+                            FirebaseDatabase.getInstance().getReference("Meals")
+                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .child("meal_plan").child(getMealPlan(meal,selectedOption).getId()).setValue(getMealPlan(meal,selectedOption));
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        plan.setChecked(false);
+                        editor.putBoolean(key_plan,plan.isChecked());
+                        editor.commit();
+                    }
+                })
+                .show();
+    }
     @Override
     public void getSingleRandomMeal(Meal meal) {
         this.meal=meal;

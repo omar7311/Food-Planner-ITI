@@ -22,6 +22,8 @@ public interface MealDao {
     void deleteMeal(Meal meal);
     @Query("SELECT * FROM mealPlan_table")
     LiveData<List<MealPlan>> getAllMealsPlan();
+    @Query("SELECT * FROM mealPlan_table WHERE date=:date")
+    LiveData<List<MealPlan>> getMealsPlanByDate(String date);
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertMeal(MealPlan mealPlan);
     @Delete

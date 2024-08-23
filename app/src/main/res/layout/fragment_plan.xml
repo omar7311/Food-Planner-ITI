@@ -1,14 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.PlanFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".plan_meal.view.PlanFragment">
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroup"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="plan" />
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:singleSelection="true"
+        android:layout_marginHorizontal="@dimen/_8sdp"
+        >
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:textAlignment="center"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:text="ALL"/>
 
-</FrameLayout>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:textAlignment="center"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:text="SAT"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:textAlignment="center"
+            android:textSize="16dp"
+            android:text="SUN"
+            />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:textAlignment="center"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:text="MON"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:textAlignment="center"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:text="TUE"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:textAlignment="center"
+            android:textSize="16dp"
+            android:text="WED"
+            />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:textAlignment="center"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:text="THU"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:textAlignment="center"
+            android:textSize="16dp"
+            android:text="FRI"
+            />
+    </com.google.android.material.chip.ChipGroup>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/chipGroup"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

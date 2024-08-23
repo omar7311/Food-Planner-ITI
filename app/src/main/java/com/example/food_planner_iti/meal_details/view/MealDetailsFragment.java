@@ -1,6 +1,7 @@
 package com.example.food_planner_iti.meal_details.view;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -20,6 +21,8 @@ import android.webkit.WebViewClient;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +30,9 @@ import com.bumptech.glide.Glide;
 import com.example.food_planner_iti.R;
 import com.example.food_planner_iti.local_database.DatabaseManger;
 import com.example.food_planner_iti.local_database.Meal;
+import com.example.food_planner_iti.local_database.MealPlan;
 import com.example.food_planner_iti.meal_details.presenter.MealDetailsPresenter;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -44,6 +49,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
     MealDetailsPresenter presenter;
     CheckBox fav, plan;
     SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
     String key_fav;
     String key_plan;
     Meal meal;
@@ -70,7 +76,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
         fav = view.findViewById(R.id.addToFav);
         plan = view.findViewById(R.id.addToPlan);
         sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+         editor = sharedPreferences.edit();
         presenter = new MealDetailsPresenter(this,new DatabaseManger(getContext(),this));
         fav.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -91,11 +97,19 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
                 }
             }
         });
-        plan.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        plan.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                editor.putBoolean(key_plan, isChecked);
+            public void onClick(View v) {
+                editor.putBoolean(key_plan, plan.isChecked());
                 editor.commit();
+                if(plan.isChecked()){
+                    showRadioGroupDialog();}
+                else {
+                    new Thread(()-> presenter.deletePlanMeal(getMealPlan(meal,selectedOption))).start();
+                    FirebaseDatabase.getInstance().getReference("Meals")
+                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .child("meal_plan").child(getMealPlan(meal,selectedOption).getId()).setValue(null);
+                }
             }
         });
         description = view.findViewById(R.id.description);
@@ -104,7 +118,59 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
         String id = MealDetailsFragmentArgs.fromBundle(getArguments()).getMealDetails();
         presenter.sendMealId(id);
     }
+    public MealPlan getMealPlan(Meal meal, String date){
+        MealPlan mealPlan=new MealPlan();
+        mealPlan.setId(meal.getId());
+        mealPlan.setDate(date);
+        mealPlan.setCountry(meal.getCountry());
+        mealPlan.setIngredients(meal.getIngredients());
+        mealPlan.setIngredientsImage(meal.getIngredientsImage());
+        mealPlan.setImageUrl(meal.getImageUrl());
+        mealPlan.setName(meal.getName());
+        mealPlan.setVideoUrl(meal.getVideoUrl());
+        mealPlan.setSteps(meal.getSteps());
+        return mealPlan;
+    }
+    private void showRadioGroupDialog() {
+        // Inflate the custom layout
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.list_of_week, null);
 
+        // Initialize the radio group from the custom layout
+        RadioGroup radioGroup = dialogView.findViewById(R.id.radio_group);
+
+        // Create the AlertDialog using MaterialAlertDialogBuilder
+        new MaterialAlertDialogBuilder(this.getContext())
+                .setTitle("Choose a day")
+                .setCancelable(false)
+                .setView(dialogView)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Find the selected radio button by its ID
+                        int selectedId = radioGroup.getCheckedRadioButtonId();
+                        RadioButton selectedRadioButton = dialogView.findViewById(selectedId);
+
+                        if (selectedRadioButton != null) {
+                            selectedOption = selectedRadioButton.getText().toString();
+                            new Thread( ()->presenter.insertPlanMeal(getMealPlan(meal,selectedOption))).start();
+                            FirebaseDatabase.getInstance().getReference("Meals")
+                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .child("meal_plan").child(getMealPlan(meal,selectedOption).getId()).setValue(getMealPlan(meal,selectedOption));
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel",  new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        plan.setChecked(false);
+                        editor.putBoolean(key_plan, plan.isChecked());
+                        editor.commit();
+                    }
+                })
+                .show();
+    }
+    String selectedOption;
     private void showMealDetails(Meal meal) {
         key_fav = meal.getId() + "f";
         key_plan = meal.getId() + "p";
