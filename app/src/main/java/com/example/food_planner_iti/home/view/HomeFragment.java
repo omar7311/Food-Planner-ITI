@@ -1,5 +1,7 @@
 package com.example.food_planner_iti.home.view;
 
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,6 +26,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +63,7 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
     String key_fav;
     String key_plan;
     Meal meal;
+    ScrollView scrollLayout;
     HomeFragmentDirections.ActionHomeToMealDetailsFragment actionHomeToMealDetailsFragment;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +81,7 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         homePresenter=new HomePresenter(this,new DatabaseManger(getContext(),this));
+        scrollLayout=view.findViewById(R.id.scrollView);
         nameRandomMeal=view.findViewById(R.id.nameRandomMeal);
         imageView=view.findViewById(R.id.imageRandMeal);
         categoryRecycle=view.findViewById(R.id.recycleCategories);
@@ -217,9 +223,13 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
 
     @Override
     public void errorMessage(String error) {
-
-        Snackbar.make(this.getView(),error,Snackbar.LENGTH_LONG).show();
+      showNoConnection();
     }
-
+private void showNoConnection(){
+    LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
+    View noInternetView = inflater.inflate(R.layout.no_connection, null);
+    scrollLayout.removeAllViews();
+    scrollLayout.addView(noInternetView);
+}
 
 }

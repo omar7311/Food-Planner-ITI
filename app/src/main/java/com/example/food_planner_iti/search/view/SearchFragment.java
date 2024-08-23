@@ -1,5 +1,7 @@
 package com.example.food_planner_iti.search.view;
 
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,6 +53,7 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
     MealPresenter mealPresenter;
     String flag;
      Meal meal;
+     ConstraintLayout constraintLayout;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +72,7 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
         super.onViewCreated(view, savedInstanceState);
         presenter = new SearchPresenter(this);
         mealPresenter=new MealPresenter(this,new DatabaseManger(getContext(),this));
+        constraintLayout=view.findViewById(R.id.constraint);
         searchBar = view.findViewById(R.id.search_bar);
         searchView = view.findViewById(R.id.searchView);
         searchView.inflateMenu(R.menu.search_menu);
@@ -140,9 +145,14 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
 
     @Override
     public void errorMessage(String error) {
-        Snackbar.make(this.getView(),error,Snackbar.LENGTH_SHORT).show();
+        showNoConnection();
     }
-
+    private void showNoConnection(){
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View noInternetView = inflater.inflate(R.layout.no_connection, null);
+        constraintLayout.removeAllViews();
+        constraintLayout.addView(noInternetView);
+    }
 
 
     @Override

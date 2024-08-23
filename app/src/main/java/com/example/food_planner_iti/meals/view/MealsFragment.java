@@ -1,5 +1,7 @@
 package com.example.food_planner_iti.meals.view;
 
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -17,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -39,6 +42,7 @@ public class MealsFragment extends Fragment implements MealsFragmentInterface , 
     RecyclerView recyclerView;
     MealAdapter adapter;
     Meal meal;
+    FrameLayout frameLayout;
 
 
     @Override
@@ -58,6 +62,7 @@ public class MealsFragment extends Fragment implements MealsFragmentInterface , 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         presenter = new MealPresenter(this,new DatabaseManger(getContext(),this));
+        frameLayout=view.findViewById(R.id.layout);
         recyclerView=view.findViewById(R.id.recycle);
         String str = MealsFragmentArgs.fromBundle(getArguments()).getStrCategoryOrArea();
         int flag = MealsFragmentArgs.fromBundle(getArguments()).getFlag();
@@ -84,9 +89,14 @@ public class MealsFragment extends Fragment implements MealsFragmentInterface , 
 
     @Override
     public void errorMessage(String error) {
-        Snackbar.make(this.getView(),error,Snackbar.LENGTH_SHORT).show();
+        showNoConnection();
     }
-
+    private void showNoConnection(){
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View noInternetView = inflater.inflate(R.layout.no_connection, null);
+        frameLayout.removeAllViews();
+        frameLayout.addView(noInternetView);
+    }
     @Override
     public void onClickInsert(Meal meal) {
        new Thread( ()-> presenter.insertFavMeal(meal) ).start();
