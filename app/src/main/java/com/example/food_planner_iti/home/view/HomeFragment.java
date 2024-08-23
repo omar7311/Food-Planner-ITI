@@ -4,6 +4,7 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -39,6 +40,7 @@ import com.example.food_planner_iti.local_database.Meal;
 import com.example.food_planner_iti.local_database.MealPlan;
 import com.example.food_planner_iti.model.AreasName;
 import com.example.food_planner_iti.model.CategoriesItem;
+import com.example.food_planner_iti.view.LoginActivity;
 import com.example.food_planner_iti.view.MainActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -110,8 +112,14 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
                     }
                 }else {
                     fav.setChecked(false);
-                    Toast.makeText(HomeFragment.this.getContext(), "you are a guest", Toast.LENGTH_SHORT).show();
-                }
+                    new MaterialAlertDialogBuilder(getContext()).setTitle("login first")
+                            .setMessage("you are a guest currently, you should login first")
+                            .setPositiveButton("log in", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                                }
+                            }).setNegativeButton("cancel", null).show();                }
             }
         });
         plan.setOnClickListener(new View.OnClickListener() {
@@ -130,8 +138,14 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
                     }
                 }else {
                     plan.setChecked(false);
-                    Toast.makeText(HomeFragment.this.getContext(), "you are a guest", Toast.LENGTH_SHORT).show();
-                }
+                    new MaterialAlertDialogBuilder(getContext()).setTitle("login first")
+                            .setMessage("you are a guest currently, you should login first")
+                            .setPositiveButton("log in", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                                }
+                            }).setNegativeButton("cancel", null).show();                }
             }
         });
         randomMeal.setOnClickListener(new View.OnClickListener() {

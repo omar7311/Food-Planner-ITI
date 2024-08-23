@@ -40,7 +40,6 @@ public class LoginActivity extends AppCompatActivity {
     TextView signUp;
     Button googleAuth;
     FirebaseAuth firebaseAuth;
-    FirebaseDatabase firebaseDatabase;
     GoogleSignInClient googleSignInClient;
     private static final int RC_SIGN_IN = 20;
 
@@ -112,7 +111,6 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            Toast.makeText(LoginActivity.this, "Log in anonymously success", Toast.LENGTH_SHORT).show();
                             finish();}
                         else{
                             Toast.makeText(LoginActivity.this, "error please try again", Toast.LENGTH_SHORT).show();
@@ -131,7 +129,6 @@ public class LoginActivity extends AppCompatActivity {
 
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d("tag", "before credential");
 
 
                 AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);

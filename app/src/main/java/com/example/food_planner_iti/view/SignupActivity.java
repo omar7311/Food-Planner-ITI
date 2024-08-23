@@ -3,6 +3,7 @@ package com.example.food_planner_iti.view;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -20,14 +21,15 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class SignupActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    private EditText emailEditText, passwordEditText;
+    private EditText emailEditText, passwordEditText ,confirmPassword;
     private Button signUpButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         mAuth = FirebaseAuth.getInstance();
-
+        confirmPassword=findViewById(R.id.confirmPasswordEditText);
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
         signUpButton = findViewById(R.id.signUpButton);
@@ -37,22 +39,29 @@ public class SignupActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String email = emailEditText.getText().toString().trim();
                 String password = passwordEditText.getText().toString().trim();
+                String confirm_password = confirmPassword.getText().toString().trim();
 
                 if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(SignupActivity.this, "Enter email address!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupActivity.this, "Enter email address!", Toast.LENGTH_LONG).show();
                     return;
                 }
-
+                if (!email.endsWith("@app.com")) {
+                    Toast.makeText(SignupActivity.this, "Enter email address like yourName@app.com", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(SignupActivity.this, "Enter password!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupActivity.this, "Enter password!", Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 if (password.length() < 6) {
-                    Toast.makeText(SignupActivity.this, "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupActivity.this, "Password too short, enter minimum 6 characters!", Toast.LENGTH_LONG).show();
                     return;
                 }
-
+                if (!password.equals(confirm_password)) {
+                    Toast.makeText(SignupActivity.this, "Password is not confirmed !", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 // Create user with email and password
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
@@ -68,7 +77,7 @@ public class SignupActivity extends AppCompatActivity {
                                 } else {
                                     // If sign up fails, display a message to the user.
                                     Log.w("SignUp", "createUserWithEmail:failure", task.getException());
-                                    Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException().getMessage(),
+                                    Toast.makeText(SignupActivity.this, "Authentication failed. Check internet connection" ,
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }

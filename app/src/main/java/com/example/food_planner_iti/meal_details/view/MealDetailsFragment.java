@@ -4,6 +4,7 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -35,6 +36,7 @@ import com.example.food_planner_iti.local_database.DatabaseManger;
 import com.example.food_planner_iti.local_database.Meal;
 import com.example.food_planner_iti.local_database.MealPlan;
 import com.example.food_planner_iti.meal_details.presenter.MealDetailsPresenter;
+import com.example.food_planner_iti.view.LoginActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
@@ -74,7 +76,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        scrollView=view.findViewById(R.id.detailsLayout);
+        scrollView = view.findViewById(R.id.detailsLayout);
         mealImage = view.findViewById(R.id.mealImage);
         mealName = view.findViewById(R.id.mealName);
         country = view.findViewById(R.id.country);
@@ -86,33 +88,57 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
         fav.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                editor.putBoolean(key_fav, isChecked);
-                editor.commit();
-                if (isChecked) {
-                    new Thread(() -> presenter.insertFavMeal(meal)).start();
-                    FirebaseDatabase.getInstance().getReference("Meals")
-                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .child("meal_fav").child(meal.getId()).setValue(meal);
-                } else {
-                    new Thread(() -> presenter.deleteFavMeal(meal)).start();
-                    FirebaseDatabase.getInstance().getReference("Meals")
-                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .child("meal_fav").child(meal.getId()).setValue(null);
+                if (!FirebaseAuth.getInstance().getCurrentUser().isAnonymous()) {
+                    editor.putBoolean(key_fav, isChecked);
+                    editor.commit();
+                    if (isChecked) {
+                        new Thread(() -> presenter.insertFavMeal(meal)).start();
+                        FirebaseDatabase.getInstance().getReference("Meals")
+                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .child("meal_fav").child(meal.getId()).setValue(meal);
+                    } else {
+                        new Thread(() -> presenter.deleteFavMeal(meal)).start();
+                        FirebaseDatabase.getInstance().getReference("Meals")
+                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .child("meal_fav").child(meal.getId()).setValue(null);
+                    }
+                }else{
+                    fav.setChecked(false);
+                    new MaterialAlertDialogBuilder(getContext()).setTitle("login first")
+                            .setMessage("you are a guest currently, you should login first")
+                            .setPositiveButton("log in", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                                }
+                            }).setNegativeButton("cancel", null).show();
                 }
             }
         });
         plan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editor.putBoolean(key_plan, plan.isChecked());
-                editor.commit();
-                if (plan.isChecked()) {
-                    showRadioGroupDialog();
+                if (!FirebaseAuth.getInstance().getCurrentUser().isAnonymous()) {
+                    editor.putBoolean(key_plan, plan.isChecked());
+                    editor.commit();
+                    if (plan.isChecked()) {
+                        showRadioGroupDialog();
+                    } else {
+                        new Thread(() -> presenter.deletePlanMeal(getMealPlan(meal, selectedOption))).start();
+                        FirebaseDatabase.getInstance().getReference("Meals")
+                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .child("meal_plan").child(getMealPlan(meal, selectedOption).getId()).setValue(null);
+                    }
                 } else {
-                    new Thread(() -> presenter.deletePlanMeal(getMealPlan(meal, selectedOption))).start();
-                    FirebaseDatabase.getInstance().getReference("Meals")
-                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .child("meal_plan").child(getMealPlan(meal, selectedOption).getId()).setValue(null);
+                    plan.setChecked(false);
+                    new MaterialAlertDialogBuilder(getContext()).setTitle("login first")
+                            .setMessage("you are a guest currently, you should login first")
+                            .setPositiveButton("log in", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                                }
+                            }).setNegativeButton("cancel", null).show();
                 }
             }
         });
