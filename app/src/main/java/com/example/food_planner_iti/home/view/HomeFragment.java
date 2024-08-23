@@ -85,35 +85,46 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
         plan=view.findViewById(R.id.addToPlan);
         sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        fav.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        fav.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-               editor.putBoolean(key_fav,isChecked);
-               editor.commit();
-               if(isChecked){
-                   new Thread( ()->homePresenter.insertFavMeal(meal) ).start();
-                   FirebaseDatabase.getInstance().getReference("Meals")
-                           .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                           .child("meal_fav").child(meal.getId()).setValue(meal);
-               } else {
-                   new Thread(()-> homePresenter.deleteFavMeal(meal)).start();
-                   FirebaseDatabase.getInstance().getReference("Meals")
-                           .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                           .child("meal_fav").child(meal.getId()).setValue(null);
-               }
+            public void onClick(View v) {
+                if (!FirebaseAuth.getInstance().getCurrentUser().isAnonymous()) {
+                    editor.putBoolean(key_fav, fav.isChecked());
+                    editor.commit();
+                    if (fav.isChecked()) {
+                        new Thread(() -> homePresenter.insertFavMeal(meal)).start();
+                        FirebaseDatabase.getInstance().getReference("Meals")
+                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .child("meal_fav").child(meal.getId()).setValue(meal);
+                    } else {
+                        new Thread(() -> homePresenter.deleteFavMeal(meal)).start();
+                        FirebaseDatabase.getInstance().getReference("Meals")
+                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .child("meal_fav").child(meal.getId()).setValue(null);
+                    }
+                }else {
+                    fav.setChecked(false);
+                    Toast.makeText(HomeFragment.this.getContext(), "you are a guest", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         plan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editor.putBoolean(key_plan,plan.isChecked());
-                editor.commit();
-                if(plan.isChecked()){showRadioGroupDialog();}
-                else {
-                    new Thread(()-> homePresenter.deletePlanMeal(getMealPlan(meal,selectedOption))).start();
-                    FirebaseDatabase.getInstance().getReference("Meals")
-                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .child("meal_plan").child(getMealPlan(meal,selectedOption).getId()).setValue(null);
+                if (!FirebaseAuth.getInstance().getCurrentUser().isAnonymous()) {
+                    editor.putBoolean(key_plan, plan.isChecked());
+                    editor.commit();
+                    if (plan.isChecked()) {
+                        showRadioGroupDialog();
+                    } else {
+                        new Thread(() -> homePresenter.deletePlanMeal(getMealPlan(meal, selectedOption))).start();
+                        FirebaseDatabase.getInstance().getReference("Meals")
+                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .child("meal_plan").child(getMealPlan(meal, selectedOption).getId()).setValue(null);
+                    }
+                }else {
+                    plan.setChecked(false);
+                    Toast.makeText(HomeFragment.this.getContext(), "you are a guest", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -206,6 +217,7 @@ public class HomeFragment extends Fragment implements HomeFragmentInterface {
 
     @Override
     public void errorMessage(String error) {
+
         Snackbar.make(this.getView(),error,Snackbar.LENGTH_LONG).show();
     }
 

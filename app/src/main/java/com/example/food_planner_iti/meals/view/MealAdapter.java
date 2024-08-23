@@ -26,6 +26,8 @@ import com.example.food_planner_iti.model.FullMealDetailById;
 import com.example.food_planner_iti.model.MealItem;
 import com.example.food_planner_iti.network.NetworkManger;
 import com.example.food_planner_iti.network.RetrofitClient;
+import com.example.food_planner_iti.plan_meal.view.PlanFragment;
+import com.example.food_planner_iti.plan_meal.view.PlanFragmentDirections;
 import com.example.food_planner_iti.search.view.SearchFragment;
 import com.example.food_planner_iti.search.view.SearchFragmentDirections;
 
@@ -156,22 +158,16 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
                                         (mealItems.get(getLayoutPosition()).getIdMeal());
                         Navigation.findNavController(v).navigate(action);
                     }
+                    if (fragment instanceof PlanFragment) {
+                        PlanFragmentDirections.ActionPlanToMealDetailsFragment action =
+                                PlanFragmentDirections.actionPlanToMealDetailsFragment
+                                        (mealItems.get(getLayoutPosition()).getIdMeal());
+                        Navigation.findNavController(v).navigate(action);
+                    }
                 }
             });
         }
-        public MealPlan getMealPlan(Meal meal, String date){
-            MealPlan mealPlan=new MealPlan();
-            mealPlan.setId(meal.getId());
-            mealPlan.setDate(date);
-            mealPlan.setCountry(meal.getCountry());
-            mealPlan.setIngredients(meal.getIngredients());
-            mealPlan.setIngredientsImage(meal.getIngredientsImage());
-            mealPlan.setImageUrl(meal.getImageUrl());
-            mealPlan.setName(meal.getName());
-            mealPlan.setVideoUrl(meal.getVideoUrl());
-            mealPlan.setSteps(meal.getSteps());
-            return mealPlan;
-        }
+
 
     }
 }
