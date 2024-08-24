@@ -20,6 +20,7 @@ public class FavMealPresenter implements FavMealPresenterInterface{
         databaseManger.deleteFavMeal(meal);
     }
 
+
     @Override
     public void getAllFavMeal(ArrayList<Meal> meals) {
         favFragmentInterface.getAllFavMeal(meals);
@@ -31,4 +32,5 @@ public class FavMealPresenter implements FavMealPresenterInterface{
     public void deletePlanMeal(MealPlan meal) {
         databaseManger.deletePlanMeal(meal);
     }
+
 }

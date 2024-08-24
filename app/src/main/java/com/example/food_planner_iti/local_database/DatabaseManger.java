@@ -30,6 +30,9 @@ public class DatabaseManger {
            }
        });
     }
+    public void deleteAllMeal(){
+        MealDatabase.getInstance(context).getProductDAO().deleteAllMeal();
+    }
     public void getAllPlanMeal(PlanMealPresenterInterface planMealPresenterInterface){
         MealDatabase.getInstance(context).getProductDAO().getAllMealsPlan().observe(owner, new Observer<List<MealPlan>>() {
             @Override
@@ -38,6 +41,9 @@ public class DatabaseManger {
             }
         });
 
+    }
+    public void deleteAllMealPlan(){
+        MealDatabase.getInstance(context).getProductDAO().deleteAllMealPlan();
     }
     public void getPlanMealByDate(PlanMealPresenterInterface planMealPresenterInterface,String date){
         MealDatabase.getInstance(context).getProductDAO().getMealsPlanByDate(date).observe(owner, new Observer<List<MealPlan>>() {

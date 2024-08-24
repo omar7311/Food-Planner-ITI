@@ -10,7 +10,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +24,6 @@ import com.example.food_planner_iti.local_database.MealPlan;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -56,24 +54,7 @@ public class MainActivity extends AppCompatActivity {
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getItemId()==R.id.favourite||item.getItemId()==R.id.plan){
-                    if(FirebaseAuth.getInstance().getCurrentUser().isAnonymous()){
-                        new MaterialAlertDialogBuilder(MainActivity.this).setTitle("login first")
-                                .setMessage("you are a guest currently, you should login first")
-                                .setPositiveButton("log in", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                                    }
-                                }).setNegativeButton("cancel", null).show();
-                    }
-                }
-                return false;
-            }
-        });
+
     }
 
     @Override
@@ -88,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.logout) {
             auth.signOut();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            new Thread( ()->{
+            new DatabaseManger(this,this).deleteAllMeal();
+            new DatabaseManger(this,this).deleteAllMealPlan();}
+            ).start();
+
             finish();
         } else if (item.getItemId() == R.id.sync) {
             FirebaseDatabase.getInstance().getReference("Meals")

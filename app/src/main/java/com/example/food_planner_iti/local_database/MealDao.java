@@ -3,6 +3,7 @@ package com.example.food_planner_iti.local_database;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
+import androidx.room.DeleteTable;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -28,4 +29,8 @@ public interface MealDao {
     void insertMeal(MealPlan mealPlan);
     @Delete
     void deleteMeal(MealPlan mealPlan);
+    @Query("DELETE FROM meal_table")
+    void deleteAllMeal();
+    @Query("DELETE FROM mealPlan_table")
+    void deleteAllMealPlan();
 }
