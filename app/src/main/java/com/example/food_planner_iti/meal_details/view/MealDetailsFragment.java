@@ -36,6 +36,8 @@ import com.example.food_planner_iti.local_database.DatabaseManger;
 import com.example.food_planner_iti.local_database.Meal;
 import com.example.food_planner_iti.local_database.MealPlan;
 import com.example.food_planner_iti.meal_details.presenter.MealDetailsPresenter;
+import com.example.food_planner_iti.network.NetworkManger;
+import com.example.food_planner_iti.repository.MealRepositoryImple;
 import com.example.food_planner_iti.view.LoginActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
@@ -84,7 +86,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
         plan = view.findViewById(R.id.addToPlan);
         sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        presenter = new MealDetailsPresenter(this, new DatabaseManger(getContext(), this));
+        presenter = new MealDetailsPresenter(this,new MealRepositoryImple(new NetworkManger(),new DatabaseManger(getActivity())));
         fav.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -92,15 +94,9 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
                     editor.putBoolean(key_fav, isChecked);
                     editor.commit();
                     if (isChecked) {
-                        new Thread(() -> presenter.insertFavMeal(meal)).start();
-                        FirebaseDatabase.getInstance().getReference("Meals")
-                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                .child("meal_fav").child(meal.getId()).setValue(meal);
+                         presenter.insertFavMeal(meal);
                     } else {
-                        new Thread(() -> presenter.deleteFavMeal(meal)).start();
-                        FirebaseDatabase.getInstance().getReference("Meals")
-                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                .child("meal_fav").child(meal.getId()).setValue(null);
+                        presenter.deleteFavMeal(meal);
                     }
                 }else{
                     fav.setChecked(false);
@@ -124,10 +120,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
                     if (plan.isChecked()) {
                         showRadioGroupDialog();
                     } else {
-                        new Thread(() -> presenter.deletePlanMeal(getMealPlan(meal, selectedOption))).start();
-                        FirebaseDatabase.getInstance().getReference("Meals")
-                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                .child("meal_plan").child(getMealPlan(meal, selectedOption).getId()).setValue(null);
+                         presenter.deletePlanMeal(meal, selectedOption);
                     }
                 } else {
                     plan.setChecked(false);
@@ -149,19 +142,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
         presenter.sendMealId(id);
     }
 
-    public MealPlan getMealPlan(Meal meal, String date) {
-        MealPlan mealPlan = new MealPlan();
-        mealPlan.setId(meal.getId());
-        mealPlan.setDate(date);
-        mealPlan.setCountry(meal.getCountry());
-        mealPlan.setIngredients(meal.getIngredients());
-        mealPlan.setIngredientsImage(meal.getIngredientsImage());
-        mealPlan.setImageUrl(meal.getImageUrl());
-        mealPlan.setName(meal.getName());
-        mealPlan.setVideoUrl(meal.getVideoUrl());
-        mealPlan.setSteps(meal.getSteps());
-        return mealPlan;
-    }
+
 
     private void showRadioGroupDialog() {
         // Inflate the custom layout
@@ -185,10 +166,8 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
 
                         if (selectedRadioButton != null) {
                             selectedOption = selectedRadioButton.getText().toString();
-                            new Thread(() -> presenter.insertPlanMeal(getMealPlan(meal, selectedOption))).start();
-                            FirebaseDatabase.getInstance().getReference("Meals")
-                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                    .child("meal_plan").child(getMealPlan(meal, selectedOption).getId()).setValue(getMealPlan(meal, selectedOption));
+                            presenter.insertPlanMeal(meal, selectedOption);
+
                         }
                     }
                 })
@@ -240,12 +219,8 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack();
-        }
-    }
+
+
 
     @Override
     public void getMealDetails(Meal meal) {
@@ -254,7 +229,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailFragmentI
     }
 
     @Override
-    public void errorMessage(String error) {
+    public void noConnection() {
         showNoConnection();
     }
 

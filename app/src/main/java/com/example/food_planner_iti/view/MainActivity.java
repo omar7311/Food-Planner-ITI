@@ -11,6 +11,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -24,6 +25,7 @@ import com.example.food_planner_iti.local_database.MealPlan;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -39,12 +41,13 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar=findViewById(R.id.my_toolbar);
+        toolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         NavHostFragment navHostFragment =
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
+        sync();
     }
 
     @Override
@@ -61,83 +65,107 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    private void sync() {
+        FirebaseDatabase.getInstance().getReference("Meals")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("meal_fav").addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        for (int i = 0; i < snapshot.getChildrenCount(); i++) {
+                            new DatabaseManger(MainActivity.this)
+                                    .insertFavMeal(snapshot.getValue(Meal.class));
+                            editor = getPreferences(MODE_PRIVATE).edit();
+                            editor.putBoolean(snapshot.getValue(Meal.class).getId() + "f", true);
+                            editor.commit();
+
+                        }
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                        for (int i = 0; i < snapshot.getChildrenCount(); i++) {
+                            new DatabaseManger(MainActivity.this)
+                                    .deleteFavMeal(snapshot.getValue(Meal.class));
+                            editor = getPreferences(MODE_PRIVATE).edit();
+                            editor.putBoolean(snapshot.getValue(Meal.class).getId() + "f", false);
+                            editor.commit();
+
+                        }
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+        FirebaseDatabase.getInstance().getReference("Meals")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("meal_plan").addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        for (int i = 0; i < snapshot.getChildrenCount(); i++) {
+                            new DatabaseManger(MainActivity.this)
+                                    .insertPlanMeal(snapshot.getValue(Meal.class), snapshot.getValue(MealPlan.class).getDate());
+                            editor = getPreferences(MODE_PRIVATE).edit();
+                            editor.putBoolean(snapshot.getValue(Meal.class).getId() + "p", true);
+                            editor.commit();
+
+                        }
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                        for (int i = 0; i < snapshot.getChildrenCount(); i++) {
+                            new DatabaseManger(MainActivity.this)
+                                    .deletePlanMeal(snapshot.getValue(Meal.class), snapshot.getValue(MealPlan.class).getDate());
+                            editor = getPreferences(MODE_PRIVATE).edit();
+                            editor.putBoolean(snapshot.getValue(Meal.class).getId() + "p", true);
+                            editor.commit();
+                        }
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        FirebaseAuth auth=FirebaseAuth.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         if (item.getItemId() == R.id.logout) {
             auth.signOut();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            new DatabaseManger(this).deleteAllMeal();
+            new DatabaseManger(this).deleteAllMealPlan();
+            editor = getPreferences(MODE_PRIVATE).edit();
+            editor.clear();
+            editor.commit();
             finish();
-        } else if (item.getItemId() == R.id.sync) {
-            FirebaseDatabase.getInstance().getReference("Meals")
-                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                    .child("meal_fav").addChildEventListener(new ChildEventListener() {
-                        @Override
-                        public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                            for(int i=0;i<snapshot.getChildrenCount();i++) {
-                               new Thread( ()-> new DatabaseManger(MainActivity.this, MainActivity.this)
-                                        .insertFavMeal(snapshot.getValue(Meal.class))).start();
-                            }
-                        }
-
-                        @Override
-                        public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                        }
-
-                        @Override
-                        public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                            for(int i=0;i<snapshot.getChildrenCount();i++) {
-                               new Thread( ()-> new DatabaseManger(MainActivity.this, MainActivity.this)
-                                        .deleteFavMeal(snapshot.getValue(Meal.class))).start();
-                            }
-                        }
-
-                        @Override
-                        public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-
-            FirebaseDatabase.getInstance().getReference("Meals")
-                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                    .child("meal_plan").addChildEventListener(new ChildEventListener() {
-                        @Override
-                        public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                            for(int i=0;i<snapshot.getChildrenCount();i++) {
-                                new Thread( ()-> new DatabaseManger(MainActivity.this, MainActivity.this)
-                                        .insertPlanMeal(snapshot.getValue(MealPlan.class))).start();
-                            }
-                        }
-
-                        @Override
-                        public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                        }
-
-                        @Override
-                        public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                            for(int i=0;i<snapshot.getChildrenCount();i++) {
-                                new Thread( ()-> new DatabaseManger(MainActivity.this, MainActivity.this)
-                                        .deletePlanMeal(snapshot.getValue(MealPlan.class))).start();
-                            }
-                        }
-
-                        @Override
-                        public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
+        } else if (item.getItemId() == R.id.loading) {
+            recreate();
         }
         return super.onOptionsItemSelected(item);
     }

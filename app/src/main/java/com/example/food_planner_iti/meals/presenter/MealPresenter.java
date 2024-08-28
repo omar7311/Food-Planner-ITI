@@ -6,38 +6,36 @@ import com.example.food_planner_iti.local_database.MealPlan;
 import com.example.food_planner_iti.meals.view.MealsFragmentInterface;
 import com.example.food_planner_iti.model.MealItem;
 import com.example.food_planner_iti.network.NetworkManger;
+import com.example.food_planner_iti.repository.MealRepository;
 
 import java.util.ArrayList;
 
-public class MealPresenter implements MealPresenterInterface{
-    NetworkManger networkManger;
+public class MealPresenter implements MealNetworkCallBack{
     MealsFragmentInterface mealsFragmentInterface;
-    DatabaseManger databaseManger;
-
-    public MealPresenter(MealsFragmentInterface mealsFragmentInterface,DatabaseManger databaseManger) {
+     MealRepository mealRepository;
+    public MealPresenter(MealsFragmentInterface mealsFragmentInterface,MealRepository mealRepository) {
         this.mealsFragmentInterface = mealsFragmentInterface;
-        networkManger=new NetworkManger();
-        this.databaseManger=databaseManger;
+        this.mealRepository=mealRepository;
     }
     public void insertFavMeal(Meal meal) {
-        databaseManger.insertFavMeal(meal);
+        mealRepository.insertFavMeal(meal);
     }
 
     public void deleteFavMeal(Meal meal) {
-        databaseManger.deleteFavMeal(meal);
+        mealRepository.deleteFavMeal(meal);
     }
-    public void insertPlanMeal(MealPlan meal) {
-        databaseManger.insertPlanMeal(meal);
+    public void insertPlanMeal(Meal meal,String selection) {
+        mealRepository.insertPlanMeal(meal,selection);
     }
 
-    public void deletePlanMeal(MealPlan meal) {
-        databaseManger.deletePlanMeal(meal);
+    public void deletePlanMeal(Meal meal,String selection) {
+        mealRepository.deletePlanMeal(meal,selection);
     }
    public void sendCategoryName(String categoryName){
-        networkManger.getMealsByCategory(this,categoryName);
+        mealRepository.getMealsByCategories(this,categoryName);
     }
     public void sendAreaName(String areaName){
-         networkManger.getMealsByArea(this,areaName);
+         mealRepository.getMealsByArea(this,areaName);
     }
 
     @Override
@@ -46,12 +44,12 @@ public class MealPresenter implements MealPresenterInterface{
     }
 
     @Override
-    public void getMealsByCategory(ArrayList<MealItem> mealItem) {
+    public void getMealsByCategories(ArrayList<MealItem> mealItem) {
          mealsFragmentInterface.getMealsByCategory(mealItem);
     }
 
     @Override
-    public void errorMessage(String error) {
-        mealsFragmentInterface.errorMessage(error);
+    public void noConnection() {
+        mealsFragmentInterface.noConnection();
     }
 }

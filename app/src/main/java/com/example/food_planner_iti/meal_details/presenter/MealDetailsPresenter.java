@@ -5,42 +5,41 @@ import com.example.food_planner_iti.local_database.Meal;
 import com.example.food_planner_iti.local_database.MealPlan;
 import com.example.food_planner_iti.meal_details.view.MealDetailFragmentInterface;
 import com.example.food_planner_iti.network.NetworkManger;
+import com.example.food_planner_iti.repository.MealRepository;
 
-public class MealDetailsPresenter implements MealDetailsPresenterInterface {
+public class MealDetailsPresenter implements MealDetailsNetworkCallBack {
     MealDetailFragmentInterface mealDetailFragmentInterface;
-    NetworkManger networkManger;
-    DatabaseManger databaseManger;
+   MealRepository mealRepository;
 
-    public MealDetailsPresenter(MealDetailFragmentInterface mealDetailFragmentInterface,DatabaseManger databaseManger) {
+    public MealDetailsPresenter(MealDetailFragmentInterface mealDetailFragmentInterface ,MealRepository mealRepository) {
         this.mealDetailFragmentInterface = mealDetailFragmentInterface;
-        networkManger = new NetworkManger();
-        this.databaseManger=databaseManger;
+        this.mealRepository=mealRepository;
     }
     public void insertFavMeal(Meal meal) {
-        databaseManger.insertFavMeal(meal);
+        mealRepository.insertFavMeal(meal);
     }
 
     public void deleteFavMeal(Meal meal) {
-        databaseManger.deleteFavMeal(meal);
+        mealRepository.deleteFavMeal(meal);
     }
-    public void insertPlanMeal(MealPlan meal) {
-        databaseManger.insertPlanMeal(meal);
+    public void insertPlanMeal(Meal meal,String selection) {
+       mealRepository.insertPlanMeal(meal,selection);
     }
 
-    public void deletePlanMeal(MealPlan meal) {
-        databaseManger.deletePlanMeal(meal);
+    public void deletePlanMeal(Meal meal,String selection) {
+        mealRepository.deletePlanMeal(meal,selection);
     }
     public void sendMealId(String id) {
-        networkManger.getMealDetailsById(this, id);
+        mealRepository.getMealDetailsById(this, id);
     }
 
     @Override
-    public void getMealDetails(Meal meal) {
+    public void getMealDetailsById(Meal meal) {
         mealDetailFragmentInterface.getMealDetails(meal);
     }
 
     @Override
-    public void errorMessage(String error) {
-        mealDetailFragmentInterface.errorMessage(error);
+    public void noConnection() {
+        mealDetailFragmentInterface.noConnection();
     }
 }
