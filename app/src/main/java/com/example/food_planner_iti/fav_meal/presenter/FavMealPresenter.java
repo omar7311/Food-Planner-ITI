@@ -1,36 +1,34 @@
 package com.example.food_planner_iti.fav_meal.presenter;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.food_planner_iti.fav_meal.view.FavFragmentInterface;
-import com.example.food_planner_iti.local_database.DatabaseManger;
 import com.example.food_planner_iti.local_database.Meal;
-import com.example.food_planner_iti.local_database.MealPlan;
+import com.example.food_planner_iti.repository.MealRepository;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class FavMealPresenter implements FavMealPresenterInterface{
-    DatabaseManger databaseManger;
+public class FavMealPresenter {
     FavFragmentInterface favFragmentInterface;
+    MealRepository mealRepository;
 
-    public FavMealPresenter(DatabaseManger databaseManger, FavFragmentInterface favFragmentInterface) {
-        this.databaseManger = databaseManger;
+    public FavMealPresenter(MealRepository mealRepository, FavFragmentInterface favFragmentInterface) {
         this.favFragmentInterface = favFragmentInterface;
-        databaseManger.getAllFavMeal(this::getAllFavMeal);
+        this.mealRepository=mealRepository;
     }
     public void deleteFavMeal(Meal meal) {
-        databaseManger.deleteFavMeal(meal);
+        mealRepository.deleteFavMeal(meal);
     }
 
-
-    @Override
-    public void getAllFavMeal(ArrayList<Meal> meals) {
-        favFragmentInterface.getAllFavMeal(meals);
+    public LiveData<List<Meal>> getAllFavMeal() {
+      return mealRepository.getAllFavMeal();
     }
-    public void insertPlanMeal(MealPlan meal) {
-        databaseManger.insertPlanMeal(meal);
+    public void insertPlanMeal(Meal meal,String selection) {
+        mealRepository.insertPlanMeal(meal,selection);
     }
 
-    public void deletePlanMeal(MealPlan meal) {
-        databaseManger.deletePlanMeal(meal);
+    public void deletePlanMeal(Meal meal,String selection) {
+        mealRepository.deletePlanMeal(meal,selection);
     }
 
 }

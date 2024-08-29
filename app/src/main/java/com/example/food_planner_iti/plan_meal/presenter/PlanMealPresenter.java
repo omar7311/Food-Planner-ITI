@@ -1,39 +1,42 @@
 package com.example.food_planner_iti.plan_meal.presenter;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.food_planner_iti.local_database.DatabaseManger;
 import com.example.food_planner_iti.local_database.Meal;
 import com.example.food_planner_iti.local_database.MealPlan;
 import com.example.food_planner_iti.plan_meal.view.PlanFragmentInterface;
+import com.example.food_planner_iti.repository.MealRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class PlanMealPresenter implements PlanMealPresenterInterface {
-    DatabaseManger databaseManger;
+public class PlanMealPresenter {
     PlanFragmentInterface planFragmentInterface;
+    MealRepository mealRepository;
 
-    public PlanMealPresenter(DatabaseManger databaseManger, PlanFragmentInterface planFragmentInterface) {
-        this.databaseManger = databaseManger;
+    public PlanMealPresenter(MealRepository mealRepository, PlanFragmentInterface planFragmentInterface) {
+        this.mealRepository = mealRepository;
         this.planFragmentInterface = planFragmentInterface;
     }
 
-    public void sendDateMeal(String date) {
-        databaseManger.getPlanMealByDate(this, date);
+    public LiveData<List<MealPlan>> sendDateMeal(String date) {
+       return mealRepository.getPlanMealByDate(date);
     }
-    public void requestMealsPlan(){ databaseManger.getAllPlanMeal(this::getAllMealsPlan);}
-    @Override
-    public void getAllMealsPlan(ArrayList<MealPlan> mealPlans) {
-        planFragmentInterface.getAllMealsPlan(mealPlans);
+    public LiveData<List<MealPlan>> requestMealsPlan(){
+       return mealRepository.getAllPlanMeal();
     }
+
     public void insertFavMeal(Meal meal) {
-        databaseManger.insertFavMeal(meal);
+        mealRepository.insertFavMeal(meal);
     }
 
     public void deleteFavMeal(Meal meal) {
-        databaseManger.deleteFavMeal(meal);
+        mealRepository.deleteFavMeal(meal);
     }
 
-    public void deletePlanMeal(MealPlan meal) {
-        databaseManger.deletePlanMeal(meal);
+    public void deletePlanMeal(Meal meal,String selection) {
+       mealRepository.deletePlanMeal(meal,selection);
     }
 
 }

@@ -5,9 +5,8 @@ import com.example.food_planner_iti.model.MealItem;
 
 import java.util.ArrayList;
 
-public interface SearchPresenterInterface {
-    void getMealsByName(ArrayList<Meal> meals);
-    void getMealsByIngredient(ArrayList<MealItem> mealItems);
-
-    void errorMessage(String error);
+public interface SearchNetworkCallBack {
+    void searchByNameMeal(ArrayList<Meal> meals);
+    void searchByIngredient(ArrayList<MealItem> mealItems);
+    void noConnection();
 }

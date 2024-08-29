@@ -5,5 +5,5 @@ import com.example.food_planner_iti.local_database.MealPlan;
 import java.util.ArrayList;
 
 public interface PlanFragmentInterface {
-    void getAllMealsPlan(ArrayList<MealPlan> mealPlans);
+  //  void getAllMealsPlan(ArrayList<MealPlan> mealPlans);
 }

@@ -11,47 +11,47 @@ import com.example.food_planner_iti.model.CategoriesItem;
 import com.example.food_planner_iti.model.MealDetails;
 import com.example.food_planner_iti.model.SingleRandomMeal;
 import com.example.food_planner_iti.network.NetworkManger;
+import com.example.food_planner_iti.repository.MealRepository;
 
 import java.util.ArrayList;
 
-public class HomePresenter implements HomePresenterInterface {
+public class HomePresenter implements HomeNetworkCallBack{
     HomeFragmentInterface homeFragmentInterface;
-    NetworkManger networkManger;
-    DatabaseManger databaseManger;
+    MealRepository mealRepository;
 
 
-    public HomePresenter(HomeFragmentInterface homeFragmentInterface, DatabaseManger databaseManger) {
+    public HomePresenter(HomeFragmentInterface homeFragmentInterface, MealRepository mealRepository) {
         this.homeFragmentInterface = homeFragmentInterface;
-        networkManger = new NetworkManger();
-        this.databaseManger = databaseManger;
-        networkManger.getRandomMeal(this);
-        networkManger.getCategories(this);
-        networkManger.getCountries(this);
+        this.mealRepository=mealRepository;
+        mealRepository.getRandomMeal(this);
+        mealRepository.getCategories(this);
+        mealRepository.getCountries(this);
     }
 
     public void insertFavMeal(Meal meal) {
-        databaseManger.insertFavMeal(meal);
+        mealRepository.insertFavMeal(meal);
     }
 
     public void deleteFavMeal(Meal meal) {
-        databaseManger.deleteFavMeal(meal);
+        mealRepository.deleteFavMeal(meal);
     }
 
-    public void insertPlanMeal(MealPlan meal) {
-        databaseManger.insertPlanMeal(meal);
+    public void insertPlanMeal(Meal meal,String selection) {
+        mealRepository.insertPlanMeal(meal,selection);
     }
 
-    public void deletePlanMeal(MealPlan meal) {
-        databaseManger.deletePlanMeal(meal);
+    public void deletePlanMeal(Meal meal,String selection) {
+        mealRepository.deletePlanMeal(meal,selection);
     }
 
     @Override
-    public void getSingleRandomMeal(Meal meal) {
+    public void getRandomMeal(Meal meal) {
+
         homeFragmentInterface.getSingleRandomMeal(meal);
     }
 
     @Override
-    public void getAllCategoryItems(ArrayList<CategoriesItem> categoriesItemArrayList) {
+    public void getCategories(ArrayList<CategoriesItem> categoriesItemArrayList) {
         homeFragmentInterface.getAllCategoryItems(categoriesItemArrayList);
     }
 
@@ -61,7 +61,9 @@ public class HomePresenter implements HomePresenterInterface {
     }
 
     @Override
-    public void errorMessage(String error) {
-        homeFragmentInterface.errorMessage(error);
+    public void noConnection() {
+        homeFragmentInterface.noConnection();
     }
+
+
 }
