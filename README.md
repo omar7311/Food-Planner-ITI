@@ -1,0 +1,19 @@
+## Overview :
+Android Mobile Application that helps the user plan his weekly meals. In addition to having the ability to view categories, suggesting meals, and searching for a specific meal using many options. The user can save 
+favorite meals to browse them later even without network connectivity.
+## Used technology : 
+- Java 
+- Firebase authentication 
+- Firebase real-time database 
+- MVP architecture pattern 
+- Repository pattern 
+- Singleton pattern 
+- Retrofit 
+- Room database 
+- Navigation component 
+- Glide for image loading 
+- Live data 
+- Shared preference 
+- Material design
+## Demo Link
+press [here](https://drive.google.com/file/d/1kgTi4r54qb4oEAiVu58Mdys824B8HKSm/view?usp=drive_link) to watch demo app 
