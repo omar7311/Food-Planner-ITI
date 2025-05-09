@@ -8,6 +8,6 @@ public interface MealsFragmentInterface {
 
     void getMealsByArea(ArrayList<MealItem> mealItem);
     void getMealsByCategory(ArrayList<MealItem> mealItem);
-    public void errorMessage(String error) ;
+     void noConnection() ;
 
 }

@@ -2,63 +2,73 @@ package com.example.food_planner_iti.local_database;
 
 import android.content.Context;
 
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 
-import com.example.food_planner_iti.fav_meal.presenter.FavMealPresenterInterface;
-import com.example.food_planner_iti.plan_meal.presenter.PlanMealPresenterInterface;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseManger {
+public class DatabaseManger implements LocalDataSource {
     Context context;
-    LifecycleOwner owner;
 
-    public DatabaseManger(Context context,LifecycleOwner owner) {
+
+    public DatabaseManger(Context context) {
         this.context = context;
-        this.owner=owner;
     }
 
-    public void getAllFavMeal(FavMealPresenterInterface favMealPresenterInterface){
-       MealDatabase.getInstance(context).getProductDAO().getAllFavMeals().observe(owner, new Observer<List<Meal>>() {
-           @Override
-           public void onChanged(List<Meal> meals) {
-               favMealPresenterInterface.getAllFavMeal((ArrayList<Meal>) meals);
-           }
-       });
+    public LiveData<List<Meal>> getAllFavMeal(){
+      return MealDatabase.getInstance(context).getProductDAO().getAllFavMeals();
     }
-    public void getAllPlanMeal(PlanMealPresenterInterface planMealPresenterInterface){
-        MealDatabase.getInstance(context).getProductDAO().getAllMealsPlan().observe(owner, new Observer<List<MealPlan>>() {
-            @Override
-            public void onChanged(List<MealPlan> mealPlans) {
-                planMealPresenterInterface.getAllMealsPlan((ArrayList<MealPlan>) mealPlans);
-            }
-        });
+    public void deleteAllMeal(){
+     new Thread( ()-> MealDatabase.getInstance(context).getProductDAO().deleteAllMeal()).start();
+    }
+    public LiveData<List<MealPlan>> getAllPlanMeal(){
+       return MealDatabase.getInstance(context).getProductDAO().getAllMealsPlan();
 
     }
-    public void getPlanMealByDate(PlanMealPresenterInterface planMealPresenterInterface,String date){
-        MealDatabase.getInstance(context).getProductDAO().getMealsPlanByDate(date).observe(owner, new Observer<List<MealPlan>>() {
-            @Override
-            public void onChanged(List<MealPlan> mealPlans) {
-                planMealPresenterInterface.getAllMealsPlan((ArrayList<MealPlan>) mealPlans);
-
-            }
-        });
+    public void deleteAllMealPlan(){
+       new Thread( ()-> MealDatabase.getInstance(context).getProductDAO().deleteAllMealPlan()).start();
+    }
+    public  LiveData<List<MealPlan>>  getPlanMealByDate(String date){
+       return MealDatabase.getInstance(context).getProductDAO().getMealsPlanByDate(date);
 
     }
     public void insertFavMeal(Meal meal){
-        MealDatabase.getInstance(context).getProductDAO().insertMeal(meal);
+       new Thread( ()->MealDatabase.getInstance(context).getProductDAO().insertMeal(meal)).start();
+        FirebaseDatabase.getInstance().getReference("Meals")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("meal_fav").child(meal.getId()).setValue(meal);
     }
     public void deleteFavMeal(Meal meal){
-        MealDatabase.getInstance(context).getProductDAO().deleteMeal(meal);
+      new Thread( ()-> MealDatabase.getInstance(context).getProductDAO().deleteMeal(meal)).start();
+        FirebaseDatabase.getInstance().getReference("Meals")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("meal_fav").child(meal.getId()).setValue(null);
     }
-    public void insertPlanMeal(MealPlan meal){
-        MealDatabase.getInstance(context).getProductDAO().insertMeal(meal);
+    public void insertPlanMeal(Meal meal,String selection){
+       new Thread( ()-> MealDatabase.getInstance(context).getProductDAO().insertMeal(getMealPlan(meal, selection))).start();
+        FirebaseDatabase.getInstance().getReference("Meals")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("meal_plan").child(getMealPlan(meal,selection).getId()).setValue(getMealPlan(meal,selection));
     }
-    public void deletePlanMeal(MealPlan meal){
-        MealDatabase.getInstance(context).getProductDAO().deleteMeal(meal);
+    public void deletePlanMeal(Meal meal ,String selection){
+       new Thread( ()-> MealDatabase.getInstance(context).getProductDAO().deleteMeal(getMealPlan(meal, selection))).start();
+        FirebaseDatabase.getInstance().getReference("Meals")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("meal_plan").child(getMealPlan(meal, selection).getId()).setValue(null);
+    }
+    public MealPlan getMealPlan(Meal meal,String date){
+        MealPlan mealPlan=new MealPlan();
+        mealPlan.setId(meal.getId());
+        mealPlan.setDate(date);
+        mealPlan.setCountry(meal.getCountry());
+        mealPlan.setIngredients(meal.getIngredients());
+        mealPlan.setIngredientsImage(meal.getIngredientsImage());
+        mealPlan.setImageUrl(meal.getImageUrl());
+        mealPlan.setName(meal.getName());
+        mealPlan.setVideoUrl(meal.getVideoUrl());
+        mealPlan.setSteps(meal.getSteps());
+        return mealPlan;
     }
 }

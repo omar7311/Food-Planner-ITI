@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 public interface HomeFragmentInterface {
     void getSingleRandomMeal(Meal meal);
-    public void getAllCategoryItems(ArrayList<CategoriesItem> categoriesItemArrayList) ;
+     void getAllCategoryItems(ArrayList<CategoriesItem> categoriesItemArrayList) ;
 
-    public void getCountries(ArrayList<AreasName> areasNames) ;
+     void getCountries(ArrayList<AreasName> areasNames) ;
 
-    public void errorMessage(String error) ;
+     void noConnection() ;
 }

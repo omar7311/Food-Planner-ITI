@@ -8,5 +8,5 @@ import java.util.ArrayList;
 public interface SearchFragmentInterface {
     void getMealsByName(ArrayList<Meal> meals);
     void getMealsByIngredient(ArrayList<MealItem> mealItems);
-    void errorMessage(String error);
+    void noConnection();
 }

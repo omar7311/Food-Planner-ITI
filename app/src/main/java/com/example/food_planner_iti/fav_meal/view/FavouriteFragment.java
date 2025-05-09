@@ -8,6 +8,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -25,11 +28,14 @@ import com.example.food_planner_iti.local_database.MealPlan;
 import com.example.food_planner_iti.meals.view.ClickListener;
 import com.example.food_planner_iti.meals.view.MealAdapter;
 import com.example.food_planner_iti.model.MealItem;
+import com.example.food_planner_iti.network.NetworkManger;
+import com.example.food_planner_iti.repository.MealRepositoryImple;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class FavouriteFragment extends Fragment implements FavFragmentInterface, ClickListener {
@@ -54,30 +60,29 @@ public class FavouriteFragment extends Fragment implements FavFragmentInterface,
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        favMealPresenter=new FavMealPresenter(new DatabaseManger(getContext(),this),this);
+        favMealPresenter=new FavMealPresenter(new MealRepositoryImple(new NetworkManger(),new DatabaseManger(getActivity())),this);
         recyclerView=view.findViewById(R.id.Fav_recycle);
+        favMealPresenter.getAllFavMeal().observe(getActivity(), new Observer<List<Meal>>() {
+            @Override
+            public void onChanged(List<Meal> meals) {
+                ArrayList<MealItem> mealItems=new ArrayList<>();
+                for(int i=0;i< meals.size();i++){
+                    mealItems.add(new MealItem(meals.get(i).getImageUrl(),meals.get(i).getId(),meals.get(i).getName()));
+                }
+                adapter=new MealAdapter(mealItems,getContext(),FavouriteFragment.this,FavouriteFragment.this);
+                recyclerView.setAdapter(adapter);
+            }
+        });
     }
 
-    @Override
-    public void getAllFavMeal(ArrayList<Meal> meals) {
-        ArrayList<MealItem> mealItems=new ArrayList<>();
-        for(int i=0;i< meals.size();i++){
-            mealItems.add(new MealItem(meals.get(i).getImageUrl(),meals.get(i).getId(),meals.get(i).getName()));
-        }
-        adapter=new MealAdapter(mealItems,getContext(),this,this);
-        recyclerView.setAdapter(adapter);
-    }
 
     @Override
     public void onClickInsert(Meal meal) {}
 
     @Override
     public void onClickDelete(Meal meal) {
-     new Thread( ()-> favMealPresenter.deleteFavMeal(meal)).start();
+      favMealPresenter.deleteFavMeal(meal);
      adapter.notifyDataSetChanged();
-        FirebaseDatabase.getInstance().getReference("Meals")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .child("meal_fav").child(meal.getId()).setValue(null);
     }
 
     @Override
@@ -89,25 +94,10 @@ public class FavouriteFragment extends Fragment implements FavFragmentInterface,
     @Override
     public void onClickDeleteMealPlan(Meal meal) {
         this.meal=meal;
-        new Thread(()->favMealPresenter.deletePlanMeal(getMealPlan(meal,selectedOption))).start();
-        FirebaseDatabase.getInstance().getReference("Meals")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .child("meal_plan").child(getMealPlan(meal,selectedOption).getId()).setValue(null);
+        favMealPresenter.deletePlanMeal(meal,selectedOption);
     }
     String selectedOption;
-    public MealPlan getMealPlan(Meal meal, String date){
-        MealPlan mealPlan=new MealPlan();
-        mealPlan.setId(meal.getId());
-        mealPlan.setDate(date);
-        mealPlan.setCountry(meal.getCountry());
-        mealPlan.setIngredients(meal.getIngredients());
-        mealPlan.setIngredientsImage(meal.getIngredientsImage());
-        mealPlan.setImageUrl(meal.getImageUrl());
-        mealPlan.setName(meal.getName());
-        mealPlan.setVideoUrl(meal.getVideoUrl());
-        mealPlan.setSteps(meal.getSteps());
-        return mealPlan;
-    }
+
     private void showRadioGroupDialog(CheckBox plan) {
         // Inflate the custom layout
         LayoutInflater inflater = getLayoutInflater();
@@ -129,10 +119,8 @@ public class FavouriteFragment extends Fragment implements FavFragmentInterface,
                         RadioButton selectedRadioButton = dialogView.findViewById(selectedId);
                         if (selectedRadioButton != null) {
                             selectedOption = selectedRadioButton.getText().toString();
-                            new Thread( ()->favMealPresenter.insertPlanMeal(getMealPlan(meal,selectedOption))).start();
-                            FirebaseDatabase.getInstance().getReference("Meals")
-                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                    .child("meal_plan").child(getMealPlan(meal,selectedOption).getId()).setValue(getMealPlan(meal,selectedOption));
+                            favMealPresenter.insertPlanMeal(meal,selectedOption);
+
                         }
 
                     }

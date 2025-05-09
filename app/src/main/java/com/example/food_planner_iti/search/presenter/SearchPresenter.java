@@ -3,36 +3,37 @@ package com.example.food_planner_iti.search.presenter;
 import com.example.food_planner_iti.local_database.Meal;
 import com.example.food_planner_iti.model.MealItem;
 import com.example.food_planner_iti.network.NetworkManger;
+import com.example.food_planner_iti.repository.MealRepository;
 import com.example.food_planner_iti.search.view.SearchFragmentInterface;
 
 import java.util.ArrayList;
 
-public class SearchPresenter implements SearchPresenterInterface{
+public class SearchPresenter implements SearchNetworkCallBack{
     SearchFragmentInterface searchFragmentInterface;
-    NetworkManger networkManger;
+    MealRepository mealRepository;
 
-    public SearchPresenter(SearchFragmentInterface searchFragmentInterface) {
+    public SearchPresenter(SearchFragmentInterface searchFragmentInterface,MealRepository mealRepository) {
         this.searchFragmentInterface = searchFragmentInterface;
-        networkManger=new NetworkManger();
+       this.mealRepository=mealRepository;
     }
     public void sendMealName(String name){
-           networkManger.searchByMealName(this,name);
+           mealRepository.searchByNameMeal(this,name);
     }
    public void sendIngredientName(String name){
-          networkManger.searchByIngredient(this,name);
+         mealRepository.searchByIngredient(this,name);
     }
     @Override
-    public void getMealsByName(ArrayList<Meal> meals) {
+    public void searchByNameMeal(ArrayList<Meal> meals) {
      searchFragmentInterface.getMealsByName(meals);
     }
 
     @Override
-    public void getMealsByIngredient(ArrayList<MealItem> mealItems) {
+    public void searchByIngredient(ArrayList<MealItem> mealItems) {
       searchFragmentInterface.getMealsByIngredient(mealItems);
     }
 
     @Override
-    public void errorMessage(String error) {
-        searchFragmentInterface.errorMessage(error);
+    public void noConnection() {
+        searchFragmentInterface.noConnection();
     }
 }

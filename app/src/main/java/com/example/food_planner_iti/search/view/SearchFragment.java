@@ -32,6 +32,8 @@ import com.example.food_planner_iti.meals.view.ClickListener;
 import com.example.food_planner_iti.meals.view.MealAdapter;
 import com.example.food_planner_iti.meals.view.MealsFragmentInterface;
 import com.example.food_planner_iti.model.MealItem;
+import com.example.food_planner_iti.network.NetworkManger;
+import com.example.food_planner_iti.repository.MealRepositoryImple;
 import com.example.food_planner_iti.search.presenter.SearchPresenter;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.search.SearchBar;
@@ -70,8 +72,8 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenter = new SearchPresenter(this);
-        mealPresenter=new MealPresenter(this,new DatabaseManger(getContext(),this));
+        presenter = new SearchPresenter(this,new MealRepositoryImple(new NetworkManger(),new DatabaseManger(getContext())));
+        mealPresenter=new MealPresenter(this,new MealRepositoryImple(new NetworkManger(),new DatabaseManger(getContext())));
         constraintLayout=view.findViewById(R.id.constraint);
         searchBar = view.findViewById(R.id.search_bar);
         searchView = view.findViewById(R.id.searchView);
@@ -144,7 +146,7 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
     }
 
     @Override
-    public void errorMessage(String error) {
+    public void noConnection() {
         showNoConnection();
     }
     private void showNoConnection(){
@@ -157,18 +159,12 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
 
     @Override
     public void onClickInsert(Meal meal) {
-        new Thread(()->mealPresenter.insertFavMeal(meal)).start();
-        FirebaseDatabase.getInstance().getReference("Meals")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .child("meal_fav").child(meal.getId()).setValue(meal);
+        mealPresenter.insertFavMeal(meal);
     }
 
     @Override
     public void onClickDelete(Meal meal) {
-        new Thread(()->mealPresenter.deleteFavMeal(meal)).start();
-        FirebaseDatabase.getInstance().getReference("Meals")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .child("meal_fav").child(meal.getId()).setValue(null);
+        mealPresenter.deleteFavMeal(meal);
     }
 
     @Override
@@ -180,25 +176,9 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
     @Override
     public void onClickDeleteMealPlan(Meal meal) {
         this.meal=meal;
-        new Thread( ()->mealPresenter.deletePlanMeal(getMealPlan(meal,selectedOption))).start();
-        FirebaseDatabase.getInstance().getReference("Meals")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .child("meal_plan").child(getMealPlan(meal,selectedOption).getId()).setValue(null);
+        mealPresenter.deletePlanMeal(meal,selectedOption);
     }
     String selectedOption;
-    public MealPlan getMealPlan(Meal meal,String date){
-        MealPlan mealPlan=new MealPlan();
-        mealPlan.setId(meal.getId());
-        mealPlan.setDate(date);
-        mealPlan.setCountry(meal.getCountry());
-        mealPlan.setIngredients(meal.getIngredients());
-        mealPlan.setIngredientsImage(meal.getIngredientsImage());
-        mealPlan.setImageUrl(meal.getImageUrl());
-        mealPlan.setName(meal.getName());
-        mealPlan.setVideoUrl(meal.getVideoUrl());
-        mealPlan.setSteps(meal.getSteps());
-        return mealPlan;
-    }
     private void showRadioGroupDialog(CheckBox plan) {
         // Inflate the custom layout
         LayoutInflater inflater = getLayoutInflater();
@@ -221,10 +201,7 @@ public class SearchFragment extends Fragment implements SearchFragmentInterface,
 
                         if (selectedRadioButton != null) {
                             selectedOption = selectedRadioButton.getText().toString();
-                            new Thread( ()->mealPresenter.insertPlanMeal(getMealPlan(meal,selectedOption))).start();
-                            FirebaseDatabase.getInstance().getReference("Meals")
-                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                    .child("meal_plan").child(getMealPlan(meal,selectedOption).getId()).setValue(getMealPlan(meal,selectedOption));
+                            mealPresenter.insertPlanMeal(meal,selectedOption);
                         }
                     }
                 })
